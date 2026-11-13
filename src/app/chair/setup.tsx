@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 import { ChairBackground, ChairButton } from '@/components/chair';
 import { registerChairDevice } from '@/lib/api';
-import { colors, radius, space, type } from '@/theme/tokens';
+import { colors, fonts, space } from '@/theme/tokens';
 
 /** First run — done by the family member installing the chair. */
 export default function ChairSetup() {
@@ -29,7 +29,7 @@ export default function ChairSetup() {
     <ChairBackground>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.kicker}>Set up this chair</Text>
+          <Text style={styles.kicker}>SET UP THIS CHAIR</Text>
           <Text style={styles.title}>Who will sit in this chair?</Text>
           <Text style={styles.help}>Type the name the family uses, like “Grandma Rosa”. It appears on the chair’s greeting.</Text>
           <TextInput
@@ -56,18 +56,18 @@ export default function ChairSetup() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { flexGrow: 1, justifyContent: 'center', padding: space.xl, gap: space.lg, maxWidth: 820, width: '100%', alignSelf: 'center' },
-  kicker: { ...type.heading, color: colors.primary },
-  title: { ...type.chairHuge, fontSize: 52, color: colors.text },
-  help: { ...type.heading, color: colors.textMuted, fontWeight: '500' },
+  kicker: { fontFamily: fonts.monoMedium, fontSize: 20, letterSpacing: 5, color: colors.textMuted },
+  title: { fontFamily: fonts.serif, fontSize: 64, lineHeight: 70, color: colors.text },
+  help: { fontFamily: fonts.mono, fontSize: 20, lineHeight: 30, color: colors.textMuted },
   input: {
-    ...type.chairBody,
+    fontFamily: fonts.mono,
+    fontSize: 34,
     color: colors.text,
-    backgroundColor: colors.card,
-    borderColor: colors.cardBorder,
-    borderWidth: 1,
-    borderRadius: radius.lg,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.lg,
-  },
-  error: { ...type.heading, color: colors.danger },
+    borderBottomWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    paddingVertical: space.md,
+    marginVertical: space.lg,
+    outlineStyle: 'none',
+  } as object,
+  error: { fontFamily: fonts.mono, fontSize: 20, color: colors.danger },
 });

@@ -1,15 +1,20 @@
-// Reusable UI primitives — the branding agent restyles the app from here + src/theme/tokens.ts.
+// Reusable UI primitives — the brand lives here + src/theme/tokens.ts (see docs/BRAND.md).
 export { Avatar } from './Avatar';
 export { Card } from './Card';
+export { Dashes, makeDashes } from './Dashes';
 export { GlossyButton } from './GlossyButton';
-export { haptic } from './haptics';
+export { Grain } from './Grain';
+export { haptic, hapticTick } from './haptics';
 export { Icon, type IconName } from './Icon';
 export { IconBadge } from './IconBadge';
 export { IconButton } from './IconButton';
+export { ListRow, ListSection } from './ListRow';
 export { accentPalette, type Accent } from './palette';
 export { PressableScale } from './PressableScale';
 export { ScreenBackground } from './ScreenBackground';
 export { ScreenHeader } from './ScreenHeader';
+export { Sheet, SheetOption } from './Sheet';
+export { ExtrudedCheck, Sphere } from './Sphere';
 export { TextField } from './TextField';
 export { ToastProvider, useToast } from './Toast';
 export { Txt } from './Txt';

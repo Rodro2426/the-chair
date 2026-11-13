@@ -32,7 +32,7 @@ function Bar({ index, active, color }: { index: number; active: boolean; color: 
 }
 
 /** Calm animated waveform shown while a message plays. */
-export function Waveform({ active = true, color = colors.primary }: { active?: boolean; color?: string }) {
+export function Waveform({ active = true, color = colors.text }: { active?: boolean; color?: string }) {
   return (
     <View style={styles.row} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       {Array.from({ length: BARS }, (_, i) => (

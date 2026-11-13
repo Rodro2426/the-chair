@@ -45,3 +45,24 @@ export function dayLabel(ts: number, now = Date.now()) {
 export function clockTime(ts: number) {
   return new Date(ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 }
+
+/** "00:07" style mono timer. */
+export function mmss(ms: number) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+const RELATION = /^(grand(ma|pa|mother|father)|granny|gran|nana|nan|nanna|nonna|nonno|abuel[ao]|abu|yaya|oma|opa|mamie|papi|papy|mimi|pop|pops|bubbe|zayde|aunt|auntie|uncle|tia|tio)$/i;
+
+/** "Grandma Rosa" → "Rosa"; "Rosa" → "Rosa"; "Nonna" → "Nonna". */
+export function shortName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length > 1 && RELATION.test(parts[0])) return parts.slice(1).join(' ');
+  return parts[0] ?? name;
+}
+
+/** Local calendar-day key. */
+export function dayKey(ts: number | Date) {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}

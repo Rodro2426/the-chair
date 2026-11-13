@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { ChairBackground, ChairButton } from '@/components/chair';
 import { getMyChairDevice } from '@/lib/api';
-import { colors, space, type } from '@/theme/tokens';
+import { colors, fonts, space } from '@/theme/tokens';
 import type { Chair } from '@/types';
 
 /** Boot: decide between first-run setup, pairing (no family linked yet) and the ambient screen. */
@@ -41,7 +41,7 @@ export default function ChairBoot() {
             <ChairButton label="Try again" onPress={() => setAttempt((a) => a + 1)} />
           </>
         ) : (
-          <ActivityIndicator size="large" color={colors.text} />
+          <ActivityIndicator size="large" color={colors.textFaint} />
         )}
       </View>
     </ChairBackground>
@@ -50,6 +50,6 @@ export default function ChairBoot() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl, gap: space.lg },
-  text: { ...type.chairBody, color: colors.text, textAlign: 'center' },
-  muted: { ...type.body, color: colors.textMuted, textAlign: 'center' },
+  text: { fontFamily: fonts.serif, fontSize: 48, lineHeight: 56, color: colors.text, textAlign: 'center' },
+  muted: { fontFamily: fonts.mono, fontSize: 18, color: colors.textMuted, textAlign: 'center' },
 });

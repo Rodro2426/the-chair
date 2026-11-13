@@ -1,5 +1,5 @@
 import { Modal, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, space, type } from '@/theme/tokens';
+import { brand, colors, fonts, radius, space } from '@/theme/tokens';
 import { ChairButton } from './ChairButton';
 
 /** Family-only settings sheet, opened by a 3s long-press on the clock. */
@@ -20,7 +20,7 @@ export function HiddenSettings({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} supportedOrientations={['portrait', 'landscape']}>
       <View style={styles.scrim}>
         <View style={styles.sheet}>
-          <Text style={styles.title}>Chair settings</Text>
+          <Text style={styles.title}>CHAIR SETTINGS</Text>
           {chairName ? <Text style={styles.sub}>{chairName}’s chair</Text> : null}
           <ChairButton label="Show pairing code" onPress={onShowPairing} style={styles.btn} />
           <ChairButton label="Reset this chair" variant="danger" onPress={onReset} style={styles.btn} />
@@ -36,14 +36,14 @@ const styles = StyleSheet.create({
   sheet: {
     width: '100%',
     maxWidth: 640,
-    backgroundColor: colors.bgElevated,
-    borderRadius: radius.xl,
+    backgroundColor: brand.black,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.cardBorder,
     padding: space.xl,
     gap: space.md,
   },
-  title: { ...type.title, color: colors.text },
-  sub: { ...type.heading, color: colors.textMuted, marginBottom: space.sm },
+  title: { fontFamily: fonts.monoMedium, fontSize: 28, letterSpacing: 4, color: colors.text },
+  sub: { fontFamily: fonts.mono, fontSize: 22, color: colors.textMuted, marginBottom: space.sm },
   btn: { minHeight: 88 },
 });

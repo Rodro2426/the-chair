@@ -1,12 +1,12 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, type TextInputInstance, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
-import { colors, colorsUi, radius, shadow, space } from '@/theme/tokens';
+import { brand, colors, space } from '@/theme/tokens';
 import { haptic, Txt } from '@/components/ui';
 
 export interface CodeInputHandle { shake: () => void; clear: () => void; focus: () => void }
 
-/** Six chunky digit boxes driven by one hidden number-pad TextInput. */
+/** Six black circles (echoing the day row) driven by one hidden number-pad TextInput. */
 export const CodeInput = forwardRef<CodeInputHandle, {
   value: string; onChange: (v: string) => void; onComplete?: (v: string) => void; length?: number; error?: boolean; disabled?: boolean;
 }>(function CodeInput({ value, onChange, onComplete, length = 6, error, disabled }, ref) {
@@ -37,7 +37,7 @@ export const CodeInput = forwardRef<CodeInputHandle, {
         {digits.map((d, i) => {
           const active = focused && !disabled && i === activeIndex && value.length < length + 1;
           return (
-            <View key={i} style={[styles.boxOuter, shadow.card]}>
+            <View key={i} style={styles.boxOuter}>
               <View
                 style={[
                   styles.box,
@@ -46,8 +46,9 @@ export const CodeInput = forwardRef<CodeInputHandle, {
                   error && styles.error,
                 ]}
               >
-                <Txt variant="display" style={{ fontSize: 34 }} tone={d ? 'default' : 'faint'}>{d || '•'}</Txt>
+                {d ? <Txt variant="number" style={{ fontSize: 24, lineHeight: 30 }}>{d}</Txt> : <View style={styles.dot} />}
               </View>
+              <View style={[styles.underline, active && { opacity: 1 }]} />
             </View>
           );
         })}
@@ -77,14 +78,16 @@ export const CodeInput = forwardRef<CodeInputHandle, {
 });
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'center', gap: space.sm },
-  boxOuter: { flex: 1, maxWidth: 58, borderRadius: radius.md },
+  row: { flexDirection: 'row', justifyContent: 'center', gap: space.sm + 2 },
+  boxOuter: { flex: 1, maxWidth: 52, alignItems: 'center' },
   box: {
-    aspectRatio: 0.8, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: colors.card, borderWidth: 2, borderColor: colorsUi.inputBorder,
+    width: '100%', aspectRatio: 1, borderRadius: 999, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: brand.black, borderWidth: 1.5, borderColor: 'transparent',
   },
-  filled: { backgroundColor: colors.bgElevated, borderColor: colorsUi.highlightEdge },
-  active: { borderColor: colors.primary },
+  filled: { borderColor: 'rgba(255,255,255,0.12)' },
+  active: { borderColor: 'rgba(255,255,255,0.55)' },
   error: { borderColor: colors.danger },
+  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)' },
+  underline: { width: 18, height: 2, borderRadius: 1, backgroundColor: colors.primary, marginTop: 8, opacity: 0 },
   hidden: { position: 'absolute', opacity: 0, width: 1, height: 1 },
 });

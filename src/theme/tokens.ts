@@ -1,68 +1,91 @@
-// PROVISIONAL design tokens. The BRANDING agent will replace the values (keep the
-// key names stable so screens don't break). Direction: high-end, dark, glossy,
-// tactile — big bold type, rich warm gradients, chunky pressable 3D buttons.
+// The Chair design tokens — graphite, grain, one glossy sphere, mono type.
+// See docs/BRAND.md. Key names are stable (screens import them); values are the brand.
+
+/** Font family names, loaded in src/app/_layout.tsx with useFonts. */
+export const fonts = {
+  mono: 'JetBrainsMono_400Regular',
+  monoMedium: 'JetBrainsMono_500Medium',
+  monoBold: 'JetBrainsMono_700Bold',
+  serif: 'InstrumentSerif_400Regular',
+  serifItalic: 'InstrumentSerif_400Regular_Italic',
+  display: 'InstrumentSerif_400Regular',
+};
+
 export const colors = {
-  bg: '#0E0B09',
-  bgElevated: '#1A1512',
-  card: '#221B17',
-  cardBorder: 'rgba(255,255,255,0.06)',
-  text: '#FFF6EC',
-  textMuted: 'rgba(255,246,236,0.6)',
-  textFaint: 'rgba(255,246,236,0.35)',
-  primary: '#FF8A3D', // warm amber — voice
-  primaryDeep: '#C2491A',
-  secondary: '#7C6CFF', // violet — photo of the day
-  secondaryDeep: '#4433C9',
-  tertiary: '#3DD6A3', // mint — text / linked state
-  tertiaryDeep: '#14936B',
-  danger: '#FF5470',
-  success: '#3DD6A3',
+  bg: '#1D1D1D', // graphite
+  bgElevated: '#252525',
+  card: '#232323',
+  cardBorder: 'rgba(255,255,255,0.09)',
+  text: '#F2EFEA', // warm off-white
+  textMuted: 'rgba(242,239,234,0.72)',
+  textFaint: 'rgba(242,239,234,0.46)',
+  // Accent: one warm yellow, used sparingly (TODAY underline, progress, HEARD).
+  primary: '#FFB52E',
+  primaryDeep: '#C98612',
+  // Rare celebration pops only.
+  secondary: '#2F5BFF', // electric blue
+  secondaryDeep: '#1B3BC4',
+  tertiary: '#FF6F61', // coral
+  tertiaryDeep: '#C9473B',
+  danger: '#FF6F61',
+  success: '#F2EFEA', // success is white — monochrome first
+};
+
+/** Brand-only extras. */
+export const brand = {
+  black: '#0B0B0B', // wells, day circles, code circles
+  well: '#0E0E0E',
+  white: '#FFFFFF',
+  grey: '#8A8A8A',
+  greyDark: '#3A3A3A',
+  divider: 'rgba(255,255,255,0.08)',
+  grainOpacity: 0.6,
 };
 
 export const gradients = {
-  voice: ['#FFB067', '#FF7A2F', '#C2491A'] as const,
-  photo: ['#A99CFF', '#7C6CFF', '#4433C9'] as const,
-  text: ['#7CF0C8', '#3DD6A3', '#14936B'] as const,
-  background: ['#1B1410', '#0E0B09'] as const,
+  // Monochrome sphere-ish faces (kept for legacy accent consumers).
+  voice: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
+  photo: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
+  text: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
+  background: ['#1F1F1F', '#1B1B1B'] as const,
 };
 
-export const radius = { sm: 12, md: 20, lg: 28, xl: 40, pill: 999 };
+// Sharp edges: rectangles, not pills. Real circles (sphere, day dots, code dots, play) use size/2.
+export const radius = { sm: 2, md: 4, lg: 6, xl: 8, pill: 4 };
 export const space = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
 
 export const type = {
-  // Font families get swapped by branding (loaded via expo-font in the root layout).
-  display: { fontSize: 40, fontWeight: '800' as const, letterSpacing: -1 },
-  title: { fontSize: 28, fontWeight: '800' as const, letterSpacing: -0.5 },
-  heading: { fontSize: 20, fontWeight: '700' as const },
-  body: { fontSize: 16, fontWeight: '500' as const },
-  caption: { fontSize: 13, fontWeight: '600' as const, letterSpacing: 0.4 },
-  // Chair (grandparent) screens: extra large for readability.
-  chairHuge: { fontSize: 64, fontWeight: '800' as const, letterSpacing: -1.5 },
-  chairBody: { fontSize: 32, fontWeight: '700' as const },
+  // Refined serif — big, rare headlines only.
+  display: { fontFamily: fonts.display, fontSize: 60, lineHeight: 62, letterSpacing: -0.5 },
+  title: { fontFamily: fonts.display, fontSize: 40, lineHeight: 44, letterSpacing: -0.3 },
+  // Everything else is mono. Generous sizes: the family app is used by older people too.
+  heading: { fontFamily: fonts.monoMedium, fontSize: 19, lineHeight: 26, letterSpacing: 0.3 },
+  body: { fontFamily: fonts.mono, fontSize: 17, lineHeight: 26, letterSpacing: 0 },
+  caption: { fontFamily: fonts.monoMedium, fontSize: 13, lineHeight: 18, letterSpacing: 1.4 },
+  // Chair (grandparent) screens: extra large, calm.
+  chairHuge: { fontFamily: fonts.monoMedium, fontSize: 64, letterSpacing: 2 },
+  chairBody: { fontFamily: fonts.monoMedium, fontSize: 30, letterSpacing: 1.2 },
 };
 
 export const shadow = {
-  // Deep, soft "3D object" shadow for chunky buttons/cards.
-  button: { shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 12 },
-  card: { shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 8 },
+  button: { shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 14, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  card: { shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 6 },
 };
 
-// ---- Added by the family-app agent (UI primitives need these; branding may restyle values) ----
 export const gradientsUi = {
-  neutral: ['#3A2F28', '#2A221D', '#1C1714'] as const,
-  danger: ['#FF8A9C', '#FF5470', '#B8233F'] as const,
-  // Top-down gloss overlay used on buttons / cards / badges.
-  gloss: ['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.04)'] as const,
-  glossSoft: ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)'] as const,
+  neutral: ['#2A2A2A', '#222222', '#1A1A1A'] as const,
+  danger: ['#FF8A7E', '#FF6F61', '#C9473B'] as const,
+  gloss: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)'] as const,
+  glossSoft: ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0)'] as const,
 };
 
 export const colorsUi = {
-  depthNeutral: '#0F0C0A', // the "underside" of neutral 3D buttons
-  dangerDeep: '#8E1B31',
-  highlightEdge: 'rgba(255,255,255,0.28)', // 1px top inner-highlight edge
-  scrim: 'rgba(0,0,0,0.6)',
-  inputBg: 'rgba(255,255,255,0.05)',
-  inputBorder: 'rgba(255,255,255,0.10)',
-  onAccent: '#1A0F08', // text drawn on bright accent gradients
+  depthNeutral: '#0B0B0B',
+  dangerDeep: '#8E2E25',
+  highlightEdge: 'rgba(255,255,255,0.18)',
+  scrim: 'rgba(0,0,0,0.66)',
+  inputBg: 'rgba(255,255,255,0.03)',
+  inputBorder: 'rgba(255,255,255,0.14)',
+  onAccent: '#0B0B0B', // text on white / yellow
   onAccentLight: '#FFFFFF',
 };

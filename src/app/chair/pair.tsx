@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-n
 import { ChairBackground, ChairButton, PairCodeDisplay } from '@/components/chair';
 import { useChairDevice } from '@/hooks/chair/useChairDevice';
 import { startPairing, stopPairing } from '@/lib/api';
-import { colors, space, type } from '@/theme/tokens';
+import { colors, fonts, space } from '@/theme/tokens';
 
 const formatLeft = (ms: number) => {
   const s = Math.max(0, Math.ceil(ms / 1000));
@@ -64,23 +64,23 @@ export default function ChairPair() {
   }, [loading, chair]);
 
   const members = chair?.memberUids.length ?? 0;
-  const codeSize = Math.min(landscape ? height * 0.2 : width * 0.12, 160);
+  const codeSize = Math.min(landscape ? height * 0.16 : width * 0.12, 150);
 
   return (
     <ChairBackground>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.kicker}>{chair ? `${chair.name}’s chair` : ' '}</Text>
+        <Text style={styles.kicker}>{chair ? `${chair.name.toUpperCase()}’S CHAIR` : ' '}</Text>
         <Text style={styles.title}>Link a family phone</Text>
         <PairCodeDisplay code={code && left > 0 ? code.code : null} size={codeSize} />
         <Text style={styles.countdown}>
           {error ? 'Getting a new code…' : code && left > 0 ? `New code in ${formatLeft(left)}` : 'Getting a code…'}
         </Text>
         <View style={styles.steps}>
-          <Text style={styles.step}>Open The Chair on your phone → Settings → Link a chair</Text>
+          <Text style={styles.step}>On your phone: The Chair → Settings → Link a chair</Text>
           <Text style={styles.stepMuted}>Then type the 6 numbers above.</Text>
         </View>
         <View style={styles.linked}>
-          <Text style={[styles.linkedText, members > 0 && { color: colors.success }]}>
+          <Text style={[styles.linkedText, members > 0 && { color: colors.text }]}>
             {members === 0 ? 'No family linked yet' : `${members} family ${members === 1 ? 'member' : 'members'} linked`}
           </Text>
         </View>
@@ -100,13 +100,13 @@ export default function ChairPair() {
 
 const styles = StyleSheet.create({
   content: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl, gap: space.lg },
-  kicker: { ...type.heading, color: colors.primary },
-  title: { ...type.chairBody, fontSize: 44, color: colors.text, textAlign: 'center' },
-  countdown: { ...type.chairBody, fontSize: 26, color: colors.textMuted, fontVariant: ['tabular-nums'] },
+  kicker: { fontFamily: fonts.monoMedium, fontSize: 22, letterSpacing: 5, color: colors.textMuted },
+  title: { fontFamily: fonts.serif, fontSize: 60, lineHeight: 68, color: colors.text, textAlign: 'center', marginBottom: space.md },
+  countdown: { fontFamily: fonts.monoMedium, fontSize: 24, letterSpacing: 2, color: colors.textMuted, fontVariant: ['tabular-nums'] },
   steps: { alignItems: 'center', gap: space.xs, maxWidth: 900 },
-  step: { ...type.chairBody, fontSize: 28, color: colors.text, textAlign: 'center' },
-  stepMuted: { ...type.heading, color: colors.textMuted, textAlign: 'center' },
+  step: { fontFamily: fonts.mono, fontSize: 26, color: colors.text, textAlign: 'center' },
+  stepMuted: { fontFamily: fonts.mono, fontSize: 22, color: colors.textMuted, textAlign: 'center' },
   linked: { paddingVertical: space.sm },
-  linkedText: { ...type.chairBody, fontSize: 28, color: colors.textMuted },
+  linkedText: { fontFamily: fonts.monoMedium, fontSize: 22, letterSpacing: 2, color: colors.textFaint },
   cta: { minWidth: 360 },
 });

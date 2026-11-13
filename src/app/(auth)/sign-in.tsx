@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, type TextInputI
 import { router } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { space } from '@/theme/tokens';
+import { colors, space } from '@/theme/tokens';
 import { GlossyButton, PressableScale, ScreenBackground, ScreenHeader, TextField, Txt } from '@/components/ui';
 import { signIn } from '@/lib/api';
 import { friendlyError } from '@/hooks/errors';
@@ -34,7 +34,8 @@ export default function SignIn() {
     <ScreenBackground>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + space.xl }]}>
-          <ScreenHeader title="Welcome back" subtitle="Sign in" />
+          <ScreenHeader title="Sign in" />
+          <Txt variant="display" style={styles.headline}>Welcome{'\n'}back.</Txt>
           <Animated.View entering={FadeInDown.springify().damping(15)} style={styles.form}>
             <TextField label="Email" placeholder="you@example.com" value={email} onChangeText={setEmail}
               keyboardType="email-address" autoCapitalize="none" autoComplete="email" returnKeyType="next" onSubmitEditing={() => pwRef.current?.focus()} />
@@ -45,8 +46,11 @@ export default function SignIn() {
           <View style={styles.form}>
             <GlossyButton title="Sign in" accent="voice" loading={busy} onPress={submit} />
             <PressableScale onPress={() => router.replace('/sign-up')} style={styles.link} hapticStyle="select">
-              <Txt variant="body" tone="muted">New here? </Txt>
-              <Txt variant="body" tone="primary" style={{ fontWeight: '800' }}>Create an account</Txt>
+              <Txt variant="label" tone="faint" style={styles.small}>New here?</Txt>
+              <View>
+                <Txt variant="label" style={styles.small}>Create an account</Txt>
+                <View style={styles.underline} />
+              </View>
             </PressableScale>
           </View>
         </ScrollView>
@@ -57,6 +61,9 @@ export default function SignIn() {
 
 const styles = StyleSheet.create({
   content: { flexGrow: 1, maxWidth: 560, width: '100%', alignSelf: 'center' },
-  form: { paddingHorizontal: space.lg, gap: space.md },
-  link: { flexDirection: 'row', justifyContent: 'center', paddingVertical: space.sm },
+  form: { paddingHorizontal: space.lg, gap: space.lg },
+  headline: { fontSize: 56, lineHeight: 60, paddingHorizontal: space.lg, marginTop: space.lg, marginBottom: space.xl },
+  small: { fontSize: 13, letterSpacing: 1.6 },
+  underline: { height: 2, width: 20, backgroundColor: colors.primary, marginTop: 4 },
+  link: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: space.sm, paddingVertical: space.md },
 });

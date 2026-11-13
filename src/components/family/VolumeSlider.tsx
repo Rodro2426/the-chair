@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, colorsUi, gradients, gradientsUi, radius, shadow } from '@/theme/tokens';
+import { colors } from '@/theme/tokens';
 import { haptic } from '@/components/ui';
 
-const THUMB = 34;
-const TRACK = 14;
+const THUMB = 26;
+const TRACK = 2;
 
-/** Chunky custom slider (0..1). `onChange` fires live, `onCommit` on release. */
+/** Thin white line with a white knob (0..1). `onChange` fires live, `onCommit` on release. */
 export function VolumeSlider({ value, onChange, onCommit }: {
   value: number; onChange?: (v: number) => void; onCommit: (v: number) => void;
 }) {
@@ -72,23 +71,16 @@ export function VolumeSlider({ value, onChange, onCommit }: {
       {...responder.panHandlers}
     >
       <View pointerEvents="none" style={styles.track}>
-        <View style={[styles.fill, { width: left + THUMB / 2 }]}>
-          <LinearGradient colors={gradients.voice} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
-        </View>
+        <View style={[styles.fill, { width: left + THUMB / 2 }]} />
       </View>
-      <View pointerEvents="none" style={[styles.thumb, shadow.button, { left }]}>
-        <LinearGradient colors={gradientsUi.gloss} style={StyleSheet.absoluteFill} />
-      </View>
+      <View pointerEvents="none" style={[styles.thumb, { left }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { height: THUMB + 12, justifyContent: 'center' },
-  track: { height: TRACK, borderRadius: radius.pill, backgroundColor: colorsUi.inputBg, borderWidth: 1, borderColor: colorsUi.inputBorder, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: radius.pill, overflow: 'hidden' },
-  thumb: {
-    position: 'absolute', width: THUMB, height: THUMB, borderRadius: THUMB / 2, overflow: 'hidden',
-    backgroundColor: colors.text, borderWidth: 2, borderColor: colorsUi.highlightEdge,
-  },
+  wrap: { height: 56, justifyContent: 'center' },
+  track: { height: TRACK, backgroundColor: 'rgba(255,255,255,0.18)' },
+  fill: { height: '100%', backgroundColor: colors.text },
+  thumb: { position: 'absolute', width: THUMB, height: THUMB, borderRadius: THUMB / 2, backgroundColor: colors.text },
 });

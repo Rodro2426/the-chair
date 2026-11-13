@@ -7,6 +7,7 @@ import {
   ChairBackground,
   ChairButton,
   ChairClock,
+  ChairSphere,
   HiddenSettings,
   KenBurnsPhoto,
   NowPlayingOverlay,
@@ -17,7 +18,7 @@ import { useHeartbeat } from '@/hooks/chair/useHeartbeat';
 import { ensureChairAudioMode } from '@/hooks/chair/playback';
 import { usePlaybackQueue } from '@/hooks/chair/usePlaybackQueue';
 import { signOut, subscribeLatestPhoto } from '@/lib/api';
-import { colors, space, type } from '@/theme/tokens';
+import { colors, fonts, space } from '@/theme/tokens';
 import type { ChairMessage } from '@/types';
 
 /** Ambient receiver screen: photo of the day, clock, auto-playing messages, one Replay button. */
@@ -77,6 +78,8 @@ export default function ChairHome() {
     paddingRight: insets.right + space.xl,
   };
   const photoUri = photo?.mediaUrl;
+  const sphereSize = Math.round(Math.min(width * (landscape ? 0.2 : 0.42), height * (landscape ? 0.3 : 0.24)));
+  const firstName = (chair?.name ?? '').trim().split(/\s+/).slice(-1)[0] ?? '';
 
   return (
     <ChairBackground>
@@ -89,12 +92,12 @@ export default function ChairHome() {
       <View style={[styles.layout, pad]}>
         <ChairClock onSecretLongPress={() => setSettingsOpen(true)} />
 
-        <View style={styles.spacer} />
+        {photoUri ? <View style={styles.spacer} /> : null}
 
         {photoUri ? (
           <View style={styles.meta}>
             <Text style={styles.photoFrom} numberOfLines={1} adjustsFontSizeToFit>
-              Photo from {photo!.senderName}
+              PHOTO FROM {photo!.senderName.toUpperCase()}
             </Text>
             {photo!.text ? (
               <Text style={styles.caption} numberOfLines={3}>
@@ -103,20 +106,18 @@ export default function ChairHome() {
             ) : null}
           </View>
         ) : (
-          <View style={styles.greetingBox}>
-            <Text style={styles.greeting} numberOfLines={2} adjustsFontSizeToFit>
-              {greetingFor(now)},
-            </Text>
-            <Text style={styles.name} numberOfLines={2} adjustsFontSizeToFit>
-              {chair?.name ?? ''}
+          <View style={styles.center} pointerEvents="none">
+            <ChairSphere size={sphereSize} active={false} />
+            <Text style={styles.greeting} numberOfLines={1} adjustsFontSizeToFit>
+              {greetingFor(now)}, {firstName}
             </Text>
           </View>
         )}
 
         <View style={[styles.bottom, !landscape && styles.bottomPortrait]}>
           <ChairButton
-            label="Replay last message"
-            icon="↻"
+            label="Replay"
+            icon="replay"
             onPress={replayLast}
             disabled={!lastPlayed || !!nowPlaying}
             style={[styles.replay, !landscape && styles.replayPortrait]}
@@ -145,14 +146,13 @@ const textShadow = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 12, t
 const styles = StyleSheet.create({
   layout: { flex: 1 },
   spacer: { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   meta: { marginBottom: space.lg, maxWidth: 1100 },
-  photoFrom: { ...type.chairHuge, color: colors.text, ...textShadow },
-  caption: { ...type.chairBody, color: colors.text, marginTop: space.sm, ...textShadow },
-  greetingBox: { marginBottom: space.xl },
-  greeting: { ...type.chairBody, fontSize: 48, color: colors.textMuted },
-  name: { ...type.chairHuge, fontSize: 96, lineHeight: 104, color: colors.text },
+  photoFrom: { fontFamily: fonts.monoMedium, fontSize: 44, letterSpacing: 5, color: colors.text, ...textShadow },
+  caption: { fontFamily: fonts.serif, fontSize: 48, lineHeight: 56, color: colors.text, marginTop: space.sm, ...textShadow },
+  greeting: { fontFamily: fonts.serif, fontSize: 64, lineHeight: 72, color: colors.text, textAlign: 'center', marginTop: -space.lg },
   bottom: { flexDirection: 'row', justifyContent: 'flex-end' },
   bottomPortrait: { justifyContent: 'center' },
-  replay: { minWidth: 420, minHeight: 120 },
+  replay: { minWidth: 380, minHeight: 120 },
   replayPortrait: { alignSelf: 'stretch', flex: 1 },
 });

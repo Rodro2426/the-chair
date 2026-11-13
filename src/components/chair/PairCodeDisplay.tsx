@@ -1,14 +1,18 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, radius, space, type } from '@/theme/tokens';
+import { brand, colors, fonts, space } from '@/theme/tokens';
 
-/** The 6-digit pairing code rendered huge, as two groups of three digits. */
+/** The 6-digit pairing code as six big black circles with off-white mono digits. */
 export function PairCodeDisplay({ code, size = 120 }: { code: string | null; size?: number }) {
-  const digits = (code ?? '······').padEnd(6, '·').slice(0, 6).split('');
+  const digits = (code ?? '').padEnd(6, ' ').slice(0, 6).split('');
   return (
     <View style={styles.row} accessibilityLabel={code ? `Pairing code ${digits.join(' ')}` : 'Loading pairing code'}>
       {digits.map((d, i) => (
-        <View key={i} style={[styles.cell, { width: size * 0.78, height: size * 1.15 }, i === 3 && { marginLeft: space.lg }]}>
-          <Text style={[styles.digit, { fontSize: size, lineHeight: size * 1.1 }]}>{d}</Text>
+        <View key={i} style={[styles.cell, { width: size, height: size, borderRadius: size / 2 }, i === 3 && { marginLeft: space.lg }]}>
+          {d.trim() ? (
+            <Text style={[styles.digit, { fontSize: size * 0.5, lineHeight: size * 0.62 }]}>{d}</Text>
+          ) : (
+            <View style={styles.dot} />
+          )}
         </View>
       ))}
     </View>
@@ -16,14 +20,8 @@ export function PairCodeDisplay({ code, size = 120 }: { code: string | null; siz
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: space.sm, justifyContent: 'center' },
-  cell: {
-    backgroundColor: colors.card,
-    borderColor: colors.cardBorder,
-    borderWidth: 1,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  digit: { ...type.chairHuge, color: colors.text, fontVariant: ['tabular-nums'], letterSpacing: 0 },
+  row: { flexDirection: 'row', gap: space.md, justifyContent: 'center' },
+  cell: { backgroundColor: brand.black, alignItems: 'center', justifyContent: 'center' },
+  digit: { fontFamily: fonts.monoMedium, color: colors.text, fontVariant: ['tabular-nums'] },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: 'rgba(255,255,255,0.25)' },
 });

@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { space } from '@/theme/tokens';
 import { OnlinePill, VolumeSlider } from '@/components/family';
-import { Card, GlossyButton, Icon, ScreenBackground, ScreenHeader, TextField, Txt, useToast } from '@/components/ui';
+import { GlossyButton, ListRow, ListSection, ScreenBackground, ScreenHeader, TextField, Txt, useToast } from '@/components/ui';
 import { renameChair, setChairVolume, unlinkChair } from '@/lib/api';
 import { useChair } from '@/hooks/useChairs';
 import { confirmAsync } from '@/hooks/confirm';
@@ -83,30 +83,25 @@ export default function ChairSettings() {
         <View style={styles.body}>
           <OnlinePill chair={chair} />
 
-          <Card style={{ gap: space.md }}>
+          <View style={{ gap: space.md }}>
             <TextField label="Grandparent’s name" value={name} onChangeText={setName} autoCapitalize="words" returnKeyType="done" onSubmitEditing={() => changed && save()} />
-            {changed && <GlossyButton title="Save name" size="md" accent="text" loading={saving} onPress={save} />}
-          </Card>
+            {changed ? <GlossyButton title="Save name" size="md" loading={saving} onPress={save} /> : null}
+          </View>
 
-          <Card style={{ gap: space.md }}>
+          <View style={{ gap: space.xs }}>
             <View style={styles.volHead}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-                <Icon name="volume" size={22} />
-                <Txt variant="heading">Chair volume</Txt>
-              </View>
-              <Txt variant="title" tone="primary" style={{ fontVariant: ['tabular-nums'] }}>{pct}%</Txt>
+              <Txt variant="caption" tone="faint" upper>Volume</Txt>
+              <Txt variant="number" style={{ fontSize: 22, lineHeight: 28 }}>{pct}%</Txt>
             </View>
             <VolumeSlider value={volume} onChange={setVolume} onCommit={commitVolume} />
-            <Txt variant="caption" tone="faint">How loud messages play on the chair.</Txt>
-          </Card>
+            <Txt variant="body" tone="faint" style={{ fontSize: 15 }}>How loud messages play on the chair.</Txt>
+          </View>
 
-          <Card style={{ gap: 6 }}>
-            <Txt variant="caption" tone="faint" upper>Family on this chair</Txt>
-            <Txt variant="heading">{chair.memberUids.length} {chair.memberUids.length === 1 ? 'person' : 'people'}</Txt>
-            <Txt variant="caption" tone="muted">Linked since {new Date(chair.createdAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</Txt>
-          </Card>
-
-          <GlossyButton title="Unlink this chair" accent="danger" size="md" loading={unlinking} onPress={unlink} />
+          <ListSection title="Family">
+            <ListRow label="People on this chair" value={String(chair.memberUids.length)} />
+            <ListRow label="Linked since" value={new Date(chair.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()} />
+            <ListRow label={unlinking ? 'Unlinking…' : 'Unlink this chair'} danger chevron={false} onPress={unlinking ? undefined : unlink} />
+          </ListSection>
         </View>
       </ScrollView>
     </ScreenBackground>
@@ -115,6 +110,6 @@ export default function ChairSettings() {
 
 const styles = StyleSheet.create({
   content: { flexGrow: 1, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  body: { paddingHorizontal: space.lg, gap: space.lg },
-  volHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  body: { paddingHorizontal: space.lg, gap: space.xxl, paddingTop: space.md },
+  volHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
 });

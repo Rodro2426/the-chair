@@ -13,3 +13,10 @@ export const haptic = {
   warning: () => { if (enabled) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {}); },
   error: () => { if (enabled) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {}); },
 };
+
+/** Recording tick: gets firmer the longer you hold. */
+export function hapticTick(strength: 0 | 1 | 2) {
+  if (!enabled) return;
+  const s = strength === 0 ? Haptics.ImpactFeedbackStyle.Light : strength === 1 ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Heavy;
+  Haptics.impactAsync(s).catch(() => {});
+}

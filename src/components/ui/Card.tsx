@@ -1,20 +1,17 @@
 import { StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradientsUi, radius, shadow, space } from '@/theme/tokens';
+import { colors, radius, space } from '@/theme/tokens';
 
 export interface CardProps extends ViewProps {
-  /** Optional colored gradient fill instead of the default glossy dark card. */
+  /** Ignored (kept for compatibility) — surfaces are flat graphite. */
   gradient?: readonly [string, string, ...string[]];
   padded?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
-/** Glossy elevated surface. */
-export function Card({ gradient, padded = true, style, children, ...rest }: CardProps) {
+/** Flat hairline surface. Use sparingly — prefer open space and dividers. */
+export function Card({ padded = true, style, children, ...rest }: CardProps) {
   return (
-    <View {...rest} style={[styles.card, shadow.card, padded && { padding: space.lg }, style]}>
-      {gradient && <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-      <LinearGradient colors={gradient ? gradientsUi.gloss : gradientsUi.glossSoft} style={styles.gloss} pointerEvents="none" />
+    <View {...rest} style={[styles.card, padded && { padding: space.lg }, style]}>
       {children}
     </View>
   );
@@ -22,11 +19,10 @@ export function Card({ gradient, padded = true, style, children, ...rest }: Card
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.card,
+    backgroundColor: 'rgba(255,255,255,0.025)',
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.cardBorder,
     overflow: 'hidden',
   },
-  gloss: { position: 'absolute', left: 0, right: 0, top: 0, height: '50%' },
 });

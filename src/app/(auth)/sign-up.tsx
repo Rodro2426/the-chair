@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, type TextInputI
 import { router } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { space } from '@/theme/tokens';
+import { colors, space } from '@/theme/tokens';
 import { GlossyButton, PressableScale, ScreenBackground, ScreenHeader, TextField, Txt, useToast } from '@/components/ui';
 import { signUp } from '@/lib/api';
 import { friendlyError } from '@/hooks/errors';
@@ -37,14 +37,15 @@ export default function SignUp() {
   };
 
   return (
-    <ScreenBackground glow="text">
+    <ScreenBackground>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + space.xl }]}>
-          <ScreenHeader title="Join the family" subtitle="Create your account" />
+          <ScreenHeader title="Create account" />
+          <Txt variant="display" style={styles.headline}>Join the{'\n'}family.</Txt>
           <Animated.View entering={FadeInDown.springify().damping(15)} style={styles.form}>
             <TextField label="Your name (what they call you)" placeholder="e.g. Santi" value={name} onChangeText={setName}
               autoCapitalize="words" autoComplete="name" returnKeyType="next" onSubmitEditing={() => emailRef.current?.focus()} />
-            <Txt variant="caption" tone="faint">The chair will say “Message from {name.trim() || 'Santi'}”.</Txt>
+            <Txt variant="caption" tone="faint" style={{ letterSpacing: 0.4, marginTop: -space.sm }}>The chair will say “Message from {name.trim() || 'Santi'}”.</Txt>
             <TextField ref={emailRef} label="Email" placeholder="you@example.com" value={email} onChangeText={setEmail}
               keyboardType="email-address" autoCapitalize="none" autoComplete="email" returnKeyType="next" onSubmitEditing={() => pwRef.current?.focus()} />
             <TextField ref={pwRef} label="Password" placeholder="At least 6 characters" value={password} onChangeText={setPassword}
@@ -52,10 +53,13 @@ export default function SignUp() {
           </Animated.View>
           <View style={{ flex: 1 }} />
           <View style={styles.form}>
-            <GlossyButton title="Create account" accent="text" loading={busy} onPress={submit} />
+            <GlossyButton title="Create account" accent="voice" loading={busy} onPress={submit} />
             <PressableScale onPress={() => router.replace('/sign-in')} style={styles.link} hapticStyle="select">
-              <Txt variant="body" tone="muted">Have an account? </Txt>
-              <Txt variant="body" tone="tertiary" style={{ fontWeight: '800' }}>Sign in</Txt>
+              <Txt variant="label" tone="faint" style={styles.small}>Have an account?</Txt>
+              <View>
+                <Txt variant="label" style={styles.small}>Sign in</Txt>
+                <View style={styles.underline} />
+              </View>
             </PressableScale>
           </View>
         </ScrollView>
@@ -66,6 +70,9 @@ export default function SignUp() {
 
 const styles = StyleSheet.create({
   content: { flexGrow: 1, maxWidth: 560, width: '100%', alignSelf: 'center' },
-  form: { paddingHorizontal: space.lg, gap: space.md },
-  link: { flexDirection: 'row', justifyContent: 'center', paddingVertical: space.sm },
+  form: { paddingHorizontal: space.lg, gap: space.lg },
+  headline: { fontSize: 56, lineHeight: 60, paddingHorizontal: space.lg, marginTop: space.lg, marginBottom: space.xl },
+  small: { fontSize: 13, letterSpacing: 1.6 },
+  underline: { height: 2, width: 20, backgroundColor: colors.primary, marginTop: 4 },
+  link: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: space.sm, paddingVertical: space.md },
 });

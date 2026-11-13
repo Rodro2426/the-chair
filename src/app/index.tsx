@@ -16,7 +16,7 @@ export default function Index() {
     return (
       <ScreenBackground>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color={colors.primary} size="large" />
+          <ActivityIndicator color={colors.textFaint} />
         </View>
       </ScreenBackground>
     );

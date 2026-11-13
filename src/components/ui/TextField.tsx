@@ -1,16 +1,16 @@
 import { forwardRef, useState } from 'react';
 import { StyleSheet, TextInput, type TextInputInstance, View, type TextInputProps } from 'react-native';
-import { colors, colorsUi, radius, space, type as typeScale } from '@/theme/tokens';
+import { colors, fonts, space } from '@/theme/tokens';
 import { Txt } from './Txt';
 
 export interface TextFieldProps extends TextInputProps { label?: string; error?: string | null }
 
-/** Big, soft, glowing-on-focus input. */
+/** Underline input: mono label above, large mono text, a hairline that turns white on focus. */
 export const TextField = forwardRef<TextInputInstance, TextFieldProps>(function TextField({ label, error, style, onFocus, onBlur, ...rest }, ref) {
   const [focused, setFocused] = useState(false);
   return (
-    <View style={{ gap: space.sm }}>
-      {label && <Txt variant="caption" tone="muted" upper>{label}</Txt>}
+    <View style={{ gap: space.xs }}>
+      {label && <Txt variant="caption" tone="faint" upper>{label}</Txt>}
       <TextInput
         ref={ref}
         placeholderTextColor={colors.textFaint}
@@ -20,25 +20,25 @@ export const TextField = forwardRef<TextInputInstance, TextFieldProps>(function 
         onBlur={(e) => { setFocused(false); onBlur?.(e); }}
         style={[
           styles.input,
-          focused && { borderColor: colors.primary },
+          focused && { borderColor: colors.text },
           !!error && { borderColor: colors.danger },
           style,
         ]}
       />
-      {!!error && <Txt variant="caption" tone="danger">{error}</Txt>}
+      {!!error && <Txt variant="caption" tone="danger" style={{ letterSpacing: 0.4 }}>{error}</Txt>}
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   input: {
-    ...typeScale.heading,
+    fontFamily: fonts.mono,
+    fontSize: 19,
     color: colors.text,
-    backgroundColor: colorsUi.inputBg,
-    borderWidth: 1.5,
-    borderColor: colorsUi.inputBorder,
-    borderRadius: radius.md,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.md + 2,
-  },
+    borderBottomWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.18)',
+    paddingVertical: space.sm + 4,
+    paddingHorizontal: 0,
+    outlineStyle: 'none',
+  } as object,
 });

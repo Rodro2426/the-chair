@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState, type
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, radius, shadow, space } from '@/theme/tokens';
+import { brand, colors, radius, shadow, space } from '@/theme/tokens';
 import { haptic } from './haptics';
 import { Txt } from './Txt';
 
@@ -34,8 +34,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <View pointerEvents="none" style={[styles.host, { top: insets.top + space.sm }]}>
         {items.map((t) => (
           <Animated.View key={t.id} entering={FadeInUp.springify().damping(16)} exiting={FadeOutUp} style={[styles.toast, shadow.card]}>
-            <View style={[styles.dot, { backgroundColor: t.kind === 'error' ? colors.danger : t.kind === 'success' ? colors.success : colors.primary }]} />
-            <Txt variant="body" style={{ flex: 1 }}>{t.message}</Txt>
+            <View style={[styles.dot, { backgroundColor: t.kind === 'error' ? colors.danger : t.kind === 'success' ? colors.primary : colors.text }]} />
+            <Txt variant="body" style={{ flex: 1, fontSize: 14 }}>{t.message}</Txt>
           </Animated.View>
         ))}
       </View>
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
   host: { position: 'absolute', left: space.md, right: space.md, gap: space.sm, alignItems: 'center' },
   toast: {
     flexDirection: 'row', alignItems: 'center', gap: space.md, maxWidth: 520, width: '100%',
-    backgroundColor: colors.bgElevated, borderColor: colors.cardBorder, borderWidth: 1,
-    borderRadius: radius.md, paddingVertical: space.md, paddingHorizontal: space.lg,
+    backgroundColor: brand.black, borderColor: colors.cardBorder, borderWidth: 1,
+    borderRadius: radius.sm, paddingVertical: space.md - 2, paddingHorizontal: space.lg,
   },
-  dot: { width: 10, height: 10, borderRadius: 5 },
+  dot: { width: 7, height: 7, borderRadius: 4 },
 });

@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { colors } from '@/theme/tokens';
+import { Grain } from '@/components/ui';
 
 const CYCLE_MS = 30_000;
 
@@ -39,6 +40,7 @@ export function KenBurnsPhoto({ uri }: { uri: string }) {
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
       />
+      <Grain opacity={0.5} />
     </>
   );
 }

@@ -1,26 +1,25 @@
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, colorsUi, gradientsUi, radius, space } from '@/theme/tokens';
+import { brand, colors, radius, space } from '@/theme/tokens';
 import type { ChairMessage } from '@/types';
-import { Icon, PressableScale, Txt, accentPalette } from '@/components/ui';
+import { Icon, PressableScale, Txt } from '@/components/ui';
 import type { MessagePlayer } from '@/hooks/useMessagePlayer';
-import { clockTime, formatDuration } from './format';
+import { clockTime, mmss } from './format';
 import { StaticWaveform } from './Waveform';
 
-function Meta({ msg, mine, light }: { msg: ChairMessage; mine: boolean; light?: boolean }) {
-  const c = light ? colorsUi.onAccent : colors.textMuted;
+function Meta({ msg, mine }: { msg: ChairMessage; mine: boolean }) {
   return (
     <View style={styles.meta}>
-      <Txt variant="caption" color={c} style={{ opacity: 0.85 }}>
-        {mine ? '' : `${msg.senderName} · `}{clockTime(msg.createdAt)}
+      <Txt variant="caption" tone="faint" style={styles.metaText}>
+        {mine ? '' : `${msg.senderName.toUpperCase()} · `}{clockTime(msg.createdAt)}
       </Txt>
       {msg.playedAt ? (
-        <Txt variant="caption" color={light ? colorsUi.onAccent : colors.success}>
-          {msg.type === 'photo' ? 'Seen ✓' : 'Played ✓'}
-        </Txt>
+        <View style={styles.heard}>
+          <Icon name="check" size={13} strokeWidth={2.6} color={colors.text} />
+          <Txt variant="caption" style={styles.metaText}>{msg.type === 'photo' ? 'SEEN' : 'HEARD'}</Txt>
+        </View>
       ) : (
-        <Txt variant="caption" color={c} style={{ opacity: 0.6 }}>Delivered</Txt>
+        <Txt variant="caption" tone="faint" style={styles.metaText}>DELIVERED</Txt>
       )}
     </View>
   );
@@ -31,11 +30,8 @@ function VoiceBubble({ msg, mine, player }: { msg: ChairMessage; mine: boolean; 
   const playing = active && player.playing;
   const totalMs = active && player.duration > 0 ? player.duration * 1000 : msg.durationMs ?? 0;
   const progress = active && player.duration > 0 ? player.currentTime / player.duration : 0;
-  const p = accentPalette.voice;
   return (
     <View style={[styles.bubble, styles.voice, mine ? styles.mine : styles.theirs]}>
-      <LinearGradient colors={p.face} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={gradientsUi.gloss} style={styles.gloss} />
       <View style={styles.voiceRow}>
         <PressableScale
           accessibilityRole="button"
@@ -45,22 +41,22 @@ function VoiceBubble({ msg, mine, player }: { msg: ChairMessage; mine: boolean; 
           style={styles.play}
           hitSlop={6}
         >
-          <Icon name={playing ? 'pause' : 'play'} size={playing ? 14 : 18} color={colors.primary} style={!playing && { marginLeft: 3 }} />
+          <Icon name={playing ? 'pause' : 'play'} size={20} color={brand.black} style={!playing && { marginLeft: 3 }} />
         </PressableScale>
-        <View style={{ flex: 1, gap: 4 }}>
-          <StaticWaveform seed={msg.id} progress={progress} color={p.label} dim={colorsUi.highlightEdge} />
-          <Txt variant="caption" color={p.label}>
-            {active && player.currentTime > 0 ? `${formatDuration(player.currentTime * 1000)} / ` : ''}
-            {formatDuration(totalMs)}
+        <View style={{ flex: 1, gap: 6 }}>
+          <StaticWaveform seed={msg.id} progress={progress} color={colors.text} dim="rgba(255,255,255,0.22)" />
+          <Txt variant="number" tone="muted" style={{ fontSize: 14 }}>
+            {active && player.currentTime > 0 ? `${mmss(player.currentTime * 1000)} / ` : ''}
+            {mmss(totalMs)}
           </Txt>
         </View>
       </View>
-      <Meta msg={msg} mine={mine} light />
+      <Meta msg={msg} mine={mine} />
     </View>
   );
 }
 
-/** Renders one message of the conversation (voice / photo / text). */
+/** One message of the conversation (voice / photo / text) — monochrome, square-cornered. */
 export function MessageBubble({ msg, mine, player }: { msg: ChairMessage; mine: boolean; player: MessagePlayer }) {
   if (msg.type === 'voice') return <VoiceBubble msg={msg} mine={mine} player={player} />;
   if (msg.type === 'photo') {
@@ -69,10 +65,10 @@ export function MessageBubble({ msg, mine, player }: { msg: ChairMessage; mine: 
         {msg.mediaUrl ? (
           <Image source={{ uri: msg.mediaUrl }} style={styles.photoImg} contentFit="cover" transition={250} />
         ) : (
-          <View style={[styles.photoImg, styles.photoPlaceholder]}><Icon name="photo" size={40} /></View>
+          <View style={[styles.photoImg, styles.photoPlaceholder]}><Icon name="photo" size={36} color={colors.textFaint} /></View>
         )}
-        <View style={{ padding: space.md, gap: 4 }}>
-          <Txt variant="caption" tone="secondary" upper>Photo of the day</Txt>
+        <View style={{ padding: space.md, gap: 6 }}>
+          <Txt variant="caption" tone="faint" upper>Photo of the day</Txt>
           {!!msg.text && <Txt variant="body">{msg.text}</Txt>}
           <Meta msg={msg} mine={mine} />
         </View>
@@ -81,24 +77,24 @@ export function MessageBubble({ msg, mine, player }: { msg: ChairMessage; mine: 
   }
   return (
     <View style={[styles.bubble, styles.text, mine ? styles.mine : styles.theirs]}>
-      <LinearGradient colors={gradientsUi.glossSoft} style={styles.gloss} />
-      <Txt variant="heading" style={{ fontWeight: '600', lineHeight: 26 }}>{msg.text}</Txt>
+      <Txt variant="body" style={{ fontSize: 18, lineHeight: 27 }}>{msg.text}</Txt>
       <Meta msg={msg} mine={mine} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bubble: { maxWidth: '86%', borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: colors.cardBorder },
-  mine: { alignSelf: 'flex-end', borderBottomRightRadius: radius.sm / 2 },
-  theirs: { alignSelf: 'flex-start', borderBottomLeftRadius: radius.sm / 2 },
-  gloss: { position: 'absolute', left: 0, right: 0, top: 0, height: '50%' },
-  voice: { width: 290, padding: space.md, gap: space.sm },
+  bubble: { maxWidth: '88%', borderRadius: radius.sm, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  mine: { alignSelf: 'flex-end', backgroundColor: '#262626' },
+  theirs: { alignSelf: 'flex-start', backgroundColor: brand.black },
+  voice: { width: 300, padding: space.md, gap: space.md },
   voiceRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  play: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.text, alignItems: 'center', justifyContent: 'center' },
-  photo: { width: 260, backgroundColor: colors.card },
+  play: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.text, alignItems: 'center', justifyContent: 'center' },
+  photo: { width: 270 },
   photoImg: { width: '100%', aspectRatio: 1 },
-  photoPlaceholder: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bgElevated },
-  text: { padding: space.md + 2, gap: space.sm, backgroundColor: colors.tertiaryDeep },
-  meta: { flexDirection: 'row', justifyContent: 'space-between', gap: space.md },
+  photoPlaceholder: { alignItems: 'center', justifyContent: 'center', backgroundColor: brand.black },
+  text: { padding: space.md + 2, gap: space.md },
+  meta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: space.md },
+  metaText: { fontSize: 12, letterSpacing: 1.2 },
+  heard: { flexDirection: 'row', alignItems: 'center', gap: 4 },
 });

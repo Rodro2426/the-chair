@@ -2,23 +2,14 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, space } from '@/theme/tokens';
+import { space } from '@/theme/tokens';
 import { OnlinePill } from '@/components/family';
-import { Avatar, Card, GlossyButton, Icon, IconBadge, PressableScale, ScreenBackground, ScreenHeader, TextField, Txt, useToast } from '@/components/ui';
+import { GlossyButton, ListRow, ListSection, ScreenBackground, ScreenHeader, TextField, Txt, useToast } from '@/components/ui';
 import { signOut, updateDisplayName } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useChairs } from '@/hooks/useChairs';
 import { confirmAsync } from '@/hooks/confirm';
 import { friendlyError } from '@/hooks/errors';
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <View style={{ gap: space.md }}>
-      <Txt variant="caption" tone="faint" upper style={{ paddingHorizontal: space.xs }}>{title}</Txt>
-      {children}
-    </View>
-  );
-}
 
 export default function Settings() {
   const insets = useSafeAreaInsets();
@@ -60,52 +51,41 @@ export default function Settings() {
   };
 
   return (
-    <ScreenBackground glow="photo">
+    <ScreenBackground>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + space.xxl }]}>
         <ScreenHeader title="Settings" />
         <View style={styles.body}>
-          <Section title="You">
-            <Card style={{ gap: space.lg }}>
-              <View style={styles.row}>
-                <Avatar name={user?.displayName ?? '?'} size={56} />
-                <View style={{ flex: 1 }}>
-                  <Txt variant="heading">{user?.displayName}</Txt>
-                  <Txt variant="caption" tone="muted">Shown as “Message from {user?.displayName}”</Txt>
-                </View>
-              </View>
-              <TextField label="Display name" value={name} onChangeText={setName} autoCapitalize="words" returnKeyType="done" onSubmitEditing={saveName} />
-              {nameChanged && <GlossyButton title="Save name" size="md" accent="text" loading={savingName} onPress={saveName} />}
-            </Card>
-          </Section>
+          <View style={{ gap: space.md }}>
+            <TextField label="Your name" value={name} onChangeText={setName} autoCapitalize="words" returnKeyType="done" onSubmitEditing={saveName} />
+            <Txt variant="body" tone="faint" style={{ fontSize: 15 }}>The chair says “Message from {name.trim() || user?.displayName}”.</Txt>
+            {nameChanged ? <GlossyButton title="Save name" size="md" loading={savingName} onPress={saveName} /> : null}
+          </View>
 
-          <Section title="Chairs">
-            {chairs.length === 0 && (
-              <Card><Txt variant="body" tone="muted">No chair linked yet.</Txt></Card>
-            )}
+          <ListSection title="Chairs">
+            {chairs.length === 0 ? <ListRow label="No chair linked yet" /> : null}
             {chairs.map((c) => (
-              <PressableScale key={c.id} pressedScale={0.98} onPress={() => router.push({ pathname: '/chairs/[id]', params: { id: c.id } })}
-                accessibilityRole="button" accessibilityLabel={`${c.name} settings`}>
-                <Card style={styles.chairRow}>
-                  <IconBadge name="chair" accent={c.id === selected?.id ? 'voice' : 'neutral'} size={52} />
-                  <View style={{ flex: 1, gap: 6 }}>
-                    <Txt variant="heading" numberOfLines={1}>{c.name}</Txt>
-                    <OnlinePill chair={c} />
-                  </View>
-                  {c.id !== selected?.id && chairs.length > 1 ? (
-                    <PressableScale onPress={() => { select(c.id); toast.show(`Now sending to ${c.name}`); }} hapticStyle="select" hitSlop={8}>
-                      <Txt variant="caption" tone="primary">Use</Txt>
-                    </PressableScale>
-                  ) : null}
-                  <Icon name="chevron" size={28} color={colors.textMuted} />
-                </Card>
-              </PressableScale>
+              <ListRow
+                key={c.id}
+                label={c.name}
+                hint={<OnlinePill chair={c} />}
+                right={c.id === selected?.id && chairs.length > 1 ? <View style={styles.activeDot} /> : null}
+                onPress={() => router.push({ pathname: '/chairs/[id]', params: { id: c.id } })}
+              />
             ))}
-            <GlossyButton title={chairs.length ? 'Link another chair' : 'Link a chair'} icon="link" accent="neutral" size="md" onPress={() => router.push('/link')} />
-          </Section>
+            {chairs.length > 1 && selected ? (
+              chairs.filter((c) => c.id !== selected.id).map((c) => (
+                <ListRow key={`use-${c.id}`} label={`Send to ${c.name}`} chevron={false}
+                  onPress={() => { select(c.id); toast.show(`Now sending to ${c.name}`); }} />
+              ))
+            ) : null}
+            <ListRow label={chairs.length ? 'Link another chair' : 'Link a chair'} hint="Enter the 6-digit code from the chair" onPress={() => router.push('/link')} />
+          </ListSection>
 
-          <Section title="Account">
-            <GlossyButton title="Sign out" accent="danger" size="md" loading={signingOut} onPress={doSignOut} />
-          </Section>
+          <ListSection title="Account">
+            <ListRow label={signingOut ? 'Signing out…' : 'Sign out'} danger chevron={false} onPress={signingOut ? undefined : doSignOut} />
+          </ListSection>
+
+          <Txt variant="caption" tone="faint" upper align="center" style={{ letterSpacing: 4, marginTop: space.lg }}>The Chair</Txt>
         </View>
       </ScrollView>
     </ScreenBackground>
@@ -114,7 +94,6 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   content: { flexGrow: 1, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  body: { paddingHorizontal: space.lg, gap: space.xl },
-  row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  chairRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md },
+  body: { paddingHorizontal: space.lg, gap: space.xxl, paddingTop: space.md },
+  activeDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#FFB52E' },
 });
