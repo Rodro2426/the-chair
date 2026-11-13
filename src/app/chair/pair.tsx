@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { ChairBackground, ChairButton, PairCodeDisplay } from '@/components/chair';
 import { useChairDevice } from '@/hooks/chair/useChairDevice';
-import { startPairing } from '@/lib/api';
+import { startPairing, stopPairing } from '@/lib/api';
 import { colors, space, type } from '@/theme/tokens';
 
 const formatLeft = (ms: number) => {
@@ -14,8 +14,8 @@ const formatLeft = (ms: number) => {
 /** Shows a 6-digit code family members type into their phone. Refreshes automatically on expiry. */
 export default function ChairPair() {
   const { from } = useLocalSearchParams<{ from?: string }>();
-  // No subscribeChair API: poll our own chair doc so the linked-family count updates.
-  const { chair, loading, refresh } = useChairDevice(5000);
+  // Live chair doc (subscribeChair) so the linked-family count updates instantly.
+  const { chair, loading } = useChairDevice();
   const [code, setCode] = useState<{ code: string; expiresAt: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(Date.now());
@@ -41,7 +41,11 @@ export default function ChairPair() {
 
   useEffect(() => {
     newCode();
-  }, [newCode]);
+    // Leaving the screen: clear the code so it can't be used later.
+    return () => {
+      if (chairId) stopPairing(chairId).catch(() => {});
+    };
+  }, [newCode, chairId]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -84,7 +88,6 @@ export default function ChairPair() {
           label={from === 'settings' ? 'Back' : members > 0 ? 'Start the chair' : 'Skip for now'}
           variant={members > 0 || from === 'settings' ? 'primary' : 'quiet'}
           onPress={() => {
-            refresh();
             if (from === 'settings' && router.canGoBack()) router.back();
             else router.replace('/chair/home');
           }}

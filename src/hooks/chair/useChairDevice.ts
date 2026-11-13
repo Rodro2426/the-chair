@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getMyChairDevice } from '@/lib/api';
+import { getMyChairDevice, subscribeChair } from '@/lib/api';
 import type { Chair } from '@/types';
 
 /**
- * Loads this device's Chair doc and re-fetches it every `pollMs` (there is no
- * subscribeChair API yet, so name/volume/memberUids changes are picked up by polling).
+ * Loads this device's Chair doc, then keeps it live via subscribeChair (name, volume,
+ * memberUids, pairing). `chair === null && !loading` means this device isn't registered.
+ * A null/errored snapshot keeps the last known chair, so a network blip never bounces
+ * the grandparent back to setup.
  */
-export function useChairDevice(pollMs = 60_000) {
+export function useChairDevice() {
   const [chair, setChair] = useState<Chair | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -28,12 +30,22 @@ export function useChairDevice(pollMs = 60_000) {
   useEffect(() => {
     mounted.current = true;
     refresh();
-    const id = setInterval(refresh, pollMs);
     return () => {
       mounted.current = false;
-      clearInterval(id);
     };
-  }, [refresh, pollMs]);
+  }, [refresh]);
+
+  const chairId = chair?.id;
+  useEffect(() => {
+    if (!chairId) return;
+    try {
+      return subscribeChair(chairId, (c) => {
+        if (c && mounted.current) setChair(c);
+      });
+    } catch (e) {
+      console.warn('[chair] subscribeChair failed', e);
+    }
+  }, [chairId]);
 
   return { chair, loading, error, refresh };
 }
