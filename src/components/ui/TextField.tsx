@@ -1,12 +1,12 @@
 import { forwardRef, useState } from 'react';
-import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, type TextInputInstance, View, type TextInputProps } from 'react-native';
 import { colors, colorsUi, radius, space, type as typeScale } from '@/theme/tokens';
 import { Txt } from './Txt';
 
 export interface TextFieldProps extends TextInputProps { label?: string; error?: string | null }
 
 /** Big, soft, glowing-on-focus input. */
-export const TextField = forwardRef<TextInput, TextFieldProps>(function TextField({ label, error, style, onFocus, onBlur, ...rest }, ref) {
+export const TextField = forwardRef<TextInputInstance, TextFieldProps>(function TextField({ label, error, style, onFocus, onBlur, ...rest }, ref) {
   const [focused, setFocused] = useState(false);
   return (
     <View style={{ gap: space.sm }}>

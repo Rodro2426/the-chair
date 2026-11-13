@@ -14,7 +14,7 @@ export function EmptyChairState({ name }: { name?: string }) {
       <Animated.View entering={FadeInDown.delay(80).springify().damping(14)} style={{ gap: space.md }}>
         <Txt variant="display" align="center">{name ? `Hi ${name}!\n` : ''}Let’s find{'\n'}the chair.</Txt>
         <Txt variant="body" tone="muted" align="center">
-          Turn on the chair’s screen and tap “Pair a phone”. Then type the 6-digit code you see.
+          Set up the chair’s tablet first — it will show a 6-digit code. Type it here and you’re connected.
         </Txt>
       </Animated.View>
       <Animated.View entering={FadeInDown.delay(160).springify().damping(14)} style={{ alignSelf: 'stretch' }}>

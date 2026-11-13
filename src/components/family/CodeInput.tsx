@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, type TextInputInstance, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { colors, colorsUi, radius, shadow, space } from '@/theme/tokens';
 import { haptic, Txt } from '@/components/ui';
@@ -10,7 +10,7 @@ export interface CodeInputHandle { shake: () => void; clear: () => void; focus: 
 export const CodeInput = forwardRef<CodeInputHandle, {
   value: string; onChange: (v: string) => void; onComplete?: (v: string) => void; length?: number; error?: boolean; disabled?: boolean;
 }>(function CodeInput({ value, onChange, onComplete, length = 6, error, disabled }, ref) {
-  const input = useRef<TextInput>(null);
+  const input = useRef<TextInputInstance>(null);
   const [focused, setFocused] = useState(true);
   const x = useSharedValue(0);
   const shakeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
