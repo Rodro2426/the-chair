@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from '@/theme/tokens';
+import { WebAudioUnlock } from '@/components/chair/WebAudioUnlock';
 
 /** Chair (receiver) mode: no headers, no gestures, screen always on. */
 export default function ChairLayout() {
@@ -17,6 +18,7 @@ export default function ChairLayout() {
           contentStyle: { backgroundColor: colors.bg },
         }}
       />
+      <WebAudioUnlock />
     </>
   );
 }

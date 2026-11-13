@@ -33,7 +33,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "backgroundColor": "#1D1D1D"
+      "backgroundColor": "#1D1D1D",
+      "output": "single",
+      "name": "The Chair",
+      "shortName": "The Chair",
+      "themeColor": "#1D1D1D"
     },
     "scheme": "thechair",
     "plugins": [
@@ -64,7 +68,8 @@
       "expo-notifications"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "baseUrl": "/the-chair"
     },
     "backgroundColor": "#1D1D1D"
   }
