@@ -1,0 +1,175 @@
+rules_version = '2';
+
+// The Chair — Firestore security rules.
+// Layout: users/{uid}, chairs/{chairId}, chairs/{chairId}/messages/{msgId}, pairCodes/{code}
+// chairId == the chair device's anonymous auth uid.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function isAnonymous() { return request.auth.token.firebase.sign_in_provider == 'anonymous'; }
+    function isFamily() { return signedIn() && !isAnonymous(); }
+    function nowMs() { return request.time.toMillis(); }
+
+    function chairData(chairId) {
+      return get(/databases/$(database)/documents/chairs/$(chairId)).data;
+    }
+    function isDeviceOf(chairId) { return signedIn() && chairData(chairId).deviceUid == me(); }
+    function isMemberOf(chairId) { return signedIn() && me() in chairData(chairId).memberUids; }
+
+    function optStr(d, key, maxLen) {
+      return !(key in d) || (d[key] is string && d[key].size() <= maxLen);
+    }
+    function nullOrNumber(v) { return v == null || v is number; }
+
+    // ---------- users ----------
+    function validUser(d) {
+      return d.keys().hasOnly(['uid', 'displayName', 'chairIds', 'createdAt'])
+        && (!('uid' in d) || d.uid == me())
+        && optStr(d, 'displayName', 80)
+        && (!('chairIds' in d) || (d.chairIds is list && d.chairIds.size() <= 50))
+        && (!('createdAt' in d) || d.createdAt is number);
+    }
+
+    match /users/{userId} {
+      allow get, delete: if signedIn() && me() == userId;
+      allow create, update: if isFamily() && me() == userId && validUser(request.resource.data);
+    }
+
+    // ---------- chairs ----------
+    function validChairSettings(d) {
+      return d.name is string && d.name.size() <= 80
+        && d.volume is number && d.volume >= 0 && d.volume <= 1
+        && (d.pairCode == null || (d.pairCode is string && d.pairCode.matches('^[0-9]{6}$')))
+        && nullOrNumber(d.pairCodeExpiresAt)
+        && nullOrNumber(d.lastSeenAt);
+    }
+
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    match /chairs/{chairId} {
+      // Device, members, or the device probing for its own (maybe missing) chair doc.
+      allow get: if signedIn() && (
+        chairId == me()
+        || resource.data.deviceUid == me()
+        || me() in resource.data.memberUids);
+      allow list: if signedIn() && (
+        resource.data.deviceUid == me()
+        || me() in resource.data.memberUids);
+
+      // Only an anonymous device creates its own chair, with no members.
+      allow create: if signedIn() && isAnonymous()
+        && chairId == me()
+        && request.resource.data.keys().hasOnly(
+             ['name', 'deviceUid', 'memberUids', 'pairCode', 'pairCodeExpiresAt', 'volume', 'lastSeenAt', 'createdAt'])
+        && request.resource.data.deviceUid == me()
+        && request.resource.data.memberUids == []
+        && request.resource.data.pairCode == null
+        && request.resource.data.createdAt is number
+        && validChairSettings(request.resource.data);
+
+      // 1) Device: name, volume, pairing code, heartbeat. Never deviceUid/memberUids.
+      // 2) Member: name and volume.
+      // 3) Join: a family user adds ONLY themselves, presenting the live, unexpired pair code.
+      // 4) Leave: a member removes ONLY themselves.
+      allow update: if signedIn() && (
+        (
+          resource.data.deviceUid == me()
+          && changedOnly(['name', 'volume', 'pairCode', 'pairCodeExpiresAt', 'lastSeenAt'])
+          && validChairSettings(request.resource.data)
+        ) || (
+          me() in resource.data.memberUids
+          && changedOnly(['name', 'volume'])
+          && validChairSettings(request.resource.data)
+        ) || (
+          isFamily()
+          && changedOnly(['memberUids', 'joinCode'])
+          && resource.data.pairCode is string
+          && resource.data.pairCodeExpiresAt is number
+          && request.resource.data.joinCode == resource.data.pairCode
+          && nowMs() < resource.data.pairCodeExpiresAt
+          && request.resource.data.memberUids is list
+          && request.resource.data.memberUids.size() <= 20
+          && request.resource.data.memberUids.toSet().size() == request.resource.data.memberUids.size()
+          && request.resource.data.memberUids.toSet()
+               == resource.data.memberUids.toSet().union([me()].toSet())
+        ) || (
+          me() in resource.data.memberUids
+          && changedOnly(['memberUids'])
+          && request.resource.data.memberUids is list
+          && request.resource.data.memberUids.toSet()
+               == resource.data.memberUids.toSet().difference([me()].toSet())
+        )
+      );
+
+      allow delete: if signedIn() && resource.data.deviceUid == me();
+
+      // ---------- messages ----------
+      function validMessage(d, msgId) {
+        return d.keys().hasAll(['chairId', 'type', 'senderUid', 'senderName', 'createdAt', 'playedAt'])
+          && d.keys().hasOnly(['chairId', 'type', 'senderUid', 'senderName', 'createdAt', 'playedAt',
+                               'text', 'mediaPath', 'mediaUrl', 'durationMs'])
+          && d.chairId == chairId
+          && d.senderUid == me()
+          && d.senderName is string && d.senderName.size() <= 80
+          && d.createdAt is number
+          && d.createdAt > nowMs() - 86400000 && d.createdAt < nowMs() + 86400000
+          && d.playedAt == null
+          && d.type in ['voice', 'text', 'photo']
+          && optStr(d, 'text', 2000)
+          && optStr(d, 'mediaUrl', 2048)
+          && (
+            (d.type == 'text'
+              && d.text is string && d.text.size() > 0
+              && !('mediaPath' in d) && !('mediaUrl' in d) && !('durationMs' in d))
+            || (d.type == 'voice'
+              && d.mediaPath == 'chairs/' + chairId + '/voice/' + msgId + '.m4a'
+              && d.mediaUrl is string
+              && d.durationMs is number && d.durationMs >= 0 && d.durationMs <= 900000
+              && !('text' in d))
+            || (d.type == 'photo'
+              && d.mediaPath == 'chairs/' + chairId + '/photos/' + msgId + '.jpg'
+              && d.mediaUrl is string
+              && !('durationMs' in d))
+          );
+      }
+
+      match /messages/{msgId} {
+        allow read: if isDeviceOf(chairId) || isMemberOf(chairId);
+        allow create: if isFamily() && isMemberOf(chairId) && validMessage(request.resource.data, msgId);
+        // Only the chair device marks messages as played.
+        allow update: if isDeviceOf(chairId)
+          && changedOnly(['playedAt'])
+          && request.resource.data.playedAt is number;
+        allow delete: if signedIn()
+          && resource.data.senderUid == me()
+          && isMemberOf(chairId);
+      }
+    }
+
+    // ---------- pairing codes ----------
+    function validPairCode(d, code) {
+      return d.keys().hasOnly(['code', 'chairId', 'expiresAt'])
+        && d.code == code
+        && code.matches('^[0-9]{6}$')
+        && d.chairId is string
+        && d.expiresAt is number
+        && d.expiresAt <= nowMs() + 15 * 60 * 1000
+        && isDeviceOf(d.chairId);
+    }
+
+    match /pairCodes/{code} {
+      allow get: if signedIn();          // exact lookup only
+      allow list: if false;              // no enumeration of codes
+      allow create: if signedIn() && validPairCode(request.resource.data, code);
+      // Re-use is allowed by the same chair, or by another chair once the old code expired.
+      allow update: if signedIn() && validPairCode(request.resource.data, code)
+        && (resource.data.chairId == request.resource.data.chairId || resource.data.expiresAt < nowMs());
+      allow delete: if signedIn() && isDeviceOf(resource.data.chairId);
+    }
+  }
+}

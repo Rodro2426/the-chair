@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// The Chair — Cloud Storage security rules.
+// Layout: chairs/{chairId}/voice/{msgId}.m4a, chairs/{chairId}/photos/{msgId}.jpg
+// Membership is read from Firestore (cross-service rules).
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function chair(chairId) {
+      return firestore.get(/databases/(default)/documents/chairs/$(chairId)).data;
+    }
+    function isMember(chairId) {
+      return request.auth != null && request.auth.uid in chair(chairId).memberUids;
+    }
+    function isDevice(chairId) {
+      return request.auth != null && chair(chairId).deviceUid == request.auth.uid;
+    }
+    function isSenderOf(chairId, msgId) {
+      return firestore.get(/databases/(default)/documents/chairs/$(chairId)/messages/$(msgId)).data.senderUid
+        == request.auth.uid;
+    }
+
+    match /chairs/{chairId}/{allPaths=**} {
+      allow read: if isMember(chairId) || isDevice(chairId);
+    }
+
+    match /chairs/{chairId}/voice/{msgId} {
+      // msgId here is the full file name, e.g. "abc123.m4a".
+      allow create: if isMember(chairId)
+        && msgId.matches('^[A-Za-z0-9]+\\.m4a$')
+        && request.resource.size <= 10 * 1024 * 1024
+        && request.resource.contentType.matches('audio/.*');
+      allow delete: if isMember(chairId) && isSenderOf(chairId, msgId.split('\\.')[0]);
+    }
+
+    match /chairs/{chairId}/photos/{msgId} {
+      allow create: if isMember(chairId)
+        && msgId.matches('^[A-Za-z0-9]+\\.jpg$')
+        && request.resource.size <= 15 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if isMember(chairId) && isSenderOf(chairId, msgId.split('\\.')[0]);
+    }
+  }
+}
