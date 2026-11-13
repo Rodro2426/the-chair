@@ -46,3 +46,23 @@ export const shadow = {
   button: { shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 12 },
   card: { shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 8 },
 };
+
+// ---- Added by the family-app agent (UI primitives need these; branding may restyle values) ----
+export const gradientsUi = {
+  neutral: ['#3A2F28', '#2A221D', '#1C1714'] as const,
+  danger: ['#FF8A9C', '#FF5470', '#B8233F'] as const,
+  // Top-down gloss overlay used on buttons / cards / badges.
+  gloss: ['rgba(255,255,255,0.32)', 'rgba(255,255,255,0.04)'] as const,
+  glossSoft: ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)'] as const,
+};
+
+export const colorsUi = {
+  depthNeutral: '#0F0C0A', // the "underside" of neutral 3D buttons
+  dangerDeep: '#8E1B31',
+  highlightEdge: 'rgba(255,255,255,0.28)', // 1px top inner-highlight edge
+  scrim: 'rgba(0,0,0,0.6)',
+  inputBg: 'rgba(255,255,255,0.05)',
+  inputBorder: 'rgba(255,255,255,0.10)',
+  onAccent: '#1A0F08', // text drawn on bright accent gradients
+  onAccentLight: '#FFFFFF',
+};
