@@ -9,7 +9,7 @@ import { Txt } from './Txt';
 export function ScreenHeader({ title, subtitle, right, close, onBack }: {
   title?: string; subtitle?: string; right?: ReactNode; close?: boolean; onBack?: () => void;
 }) {
-  const back = onBack ?? (() => (router.canGoBack() ? router.back() : router.replace('/home')));
+  const back = onBack ?? (() => (router.canGoBack() ? router.back() : router.replace('/')));
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>

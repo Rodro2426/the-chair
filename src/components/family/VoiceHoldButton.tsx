@@ -35,6 +35,8 @@ export function VoiceHoldButton({ chairName, onSend, onActiveChange }: VoiceHold
     setWillCancel(false);
     willCancelRef.current = false;
     if (reason === 'cancelled') { haptic.warning(); toast.show('Recording discarded'); return; }
+    if (reason === 'mic-ready') { toast.show('Microphone ready — press and hold to talk', 'success'); return; }
+    if (reason === 'denied') { toast.show('Microphone access is blocked — allow it in your browser settings.', 'error'); return; }
     if (reason === 'too-short') { toast.show('Hold the button while you talk'); return; }
     if (reason === 'error' || !result) { toast.show('Couldn’t use the microphone. Please try again.', 'error'); return; }
     if (reason === 'max-length') toast.show('That’s the 2-minute limit — sending it now');

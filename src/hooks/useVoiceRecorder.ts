@@ -16,7 +16,7 @@ const LEVEL_COUNT = 36;
 export type RecorderPhase = 'idle' | 'starting' | 'recording' | 'stopping';
 export type FinishMode = 'send' | 'cancel';
 export interface RecordingResult { uri: string; durationMs: number }
-export type FinishReason = 'sent' | 'cancelled' | 'too-short' | 'max-length' | 'error';
+export type FinishReason = 'sent' | 'cancelled' | 'too-short' | 'max-length' | 'denied' | 'mic-ready' | 'error';
 
 const options = { ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true };
 
@@ -86,13 +86,13 @@ export function useVoiceRecorder(onFinished: (result: RecordingResult | null, re
       const perm = await ensureMicPermission();
       if (perm !== 'granted') {
         setP('idle');
+        if (perm === 'asked') cb.current(null, 'mic-ready');
         if (perm === 'denied') {
-          Alert.alert(
+          if (Platform.OS === 'web') cb.current(null, 'denied');
+          else Alert.alert(
             'Microphone is off',
             'To record a voice message, allow The Chair to use your microphone in Settings.',
-            Platform.OS === 'web'
-              ? [{ text: 'OK' }]
-              : [{ text: 'Not now', style: 'cancel' }, { text: 'Open Settings', onPress: () => Linking.openSettings().catch(() => {}) }],
+            [{ text: 'Not now', style: 'cancel' }, { text: 'Open Settings', onPress: () => Linking.openSettings().catch(() => {}) }],
           );
         }
         return false;
