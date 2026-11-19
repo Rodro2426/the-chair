@@ -24,9 +24,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx expo export --platform web --output-dir dist
-      # Single-page app: serve index.html for deep links like /the-chair/chair
-      - run: cp dist/index.html dist/404.html && touch dist/.nojekyll
+      # Export + make it an installable web app (manifest, iOS tags, per-route pages)
+      - run: npm run build:web
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
