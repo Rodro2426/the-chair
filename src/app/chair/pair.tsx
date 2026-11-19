@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { ChairBackground, ChairButton, PairCodeDisplay } from '@/components/chair';
 import { useChairDevice } from '@/hooks/chair/useChairDevice';
+import { useHeartbeat } from '@/hooks/chair/useHeartbeat';
 import { startPairing, stopPairing } from '@/lib/api';
 import { colors, fonts, space } from '@/theme/tokens';
 
@@ -24,6 +25,8 @@ export default function ChairPair() {
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
   const chairId = chair?.id;
+  // Report the chair as online while it waits, so the family phone shows it straight away.
+  useHeartbeat(chairId);
 
   const newCode = useCallback(async () => {
     if (!chairId || fetching.current) return;
@@ -64,6 +67,42 @@ export default function ChairPair() {
   }, [loading, chair]);
 
   const members = chair?.memberUids.length ?? 0;
+
+  // When a family phone links while this screen is open, confirm it on the chair and
+  // move on to the main screen automatically (no tap needed from the grandparent).
+  const initialMembers = useRef<number | null>(null);
+  const [justLinked, setJustLinked] = useState(false);
+  useEffect(() => {
+    if (!chair) return;
+    if (initialMembers.current === null) { initialMembers.current = members; return; }
+    if (members > initialMembers.current) {
+      initialMembers.current = members;
+      setJustLinked(true);
+    }
+  }, [chair, members]);
+  useEffect(() => {
+    if (!justLinked) return;
+    const t = setTimeout(() => {
+      if (from === 'settings' && router.canGoBack()) router.back();
+      else router.replace('/chair/home');
+    }, 3000);
+    return () => clearTimeout(t);
+  }, [justLinked, from]);
+
+  if (justLinked) {
+    return (
+      <ChairBackground>
+        <View style={styles.content}>
+          <Text style={styles.kicker}>{chair ? `${chair.name.toUpperCase()}’S CHAIR` : ' '}</Text>
+          <Text style={styles.title}>Linked</Text>
+          <View style={styles.underline} />
+          <Text style={styles.step}>
+            {members === 1 ? 'A family phone is now connected.' : `${members} family phones are connected.`}
+          </Text>
+        </View>
+      </ChairBackground>
+    );
+  }
   const codeSize = Math.min(landscape ? height * 0.16 : width * 0.12, 150);
 
   return (
@@ -109,4 +148,5 @@ const styles = StyleSheet.create({
   linked: { paddingVertical: space.sm },
   linkedText: { fontFamily: fonts.monoMedium, fontSize: 22, letterSpacing: 2, color: colors.textFaint },
   cta: { minWidth: 360 },
+  underline: { width: 48, height: 3, backgroundColor: colors.primary },
 });
