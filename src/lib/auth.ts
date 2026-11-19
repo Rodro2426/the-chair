@@ -10,7 +10,7 @@ import {
 import { getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import type { UserProfile, Unsubscribe } from '@/types';
 import { auth, requireUser } from './firebase';
-import { toProfile, userDoc } from './paths';
+import { chairDoc, toProfile, userDoc } from './paths';
 
 async function loadOrCreateProfile(user: User, displayName?: string): Promise<UserProfile> {
   const ref = userDoc(user.uid);
@@ -78,6 +78,15 @@ export async function updateDisplayName(name: string): Promise<void> {
 /** Display name used as senderName on outgoing messages. */
 export async function currentSenderName(): Promise<string> {
   const user = requireUser();
+  if (user.isAnonymous) {
+    // The chair device replying: sign it with the grandparent's name.
+    try {
+      const c = await getDoc(chairDoc(user.uid));
+      const n = c.data()?.name;
+      if (typeof n === 'string' && n.trim()) return n.trim();
+    } catch { /* fall through */ }
+    return 'Your chair';
+  }
   try {
     const snap = await getDoc(userDoc(user.uid));
     const n = snap.data()?.displayName;

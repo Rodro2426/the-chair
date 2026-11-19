@@ -51,7 +51,12 @@ export function usePlaybackQueue(chairId: string | null | undefined, volume: num
   const playOne = useCallback(async (msg: ChairMessage, replay: boolean) => {
     const vol = volumeRef.current;
     setNowPlaying({ msg, phase: msg.type === 'photo' ? 'photo' : 'announce', replay });
-    await speakAsync(announcementFor(msg), { volume: vol });
+    // The spoken intro is nice-to-have: if text-to-speech isn't available, still play the message.
+    try {
+      await speakAsync(announcementFor(msg), { volume: vol });
+    } catch (e) {
+      console.warn('[chair] announcement failed, playing message anyway', e);
+    }
     if (!alive.current) return;
 
     if (msg.type === 'voice') {
@@ -129,7 +134,7 @@ export function usePlaybackQueue(chairId: string | null | undefined, volume: num
     let unsub: (() => void) | undefined;
     try {
       unsub = subscribeUnplayed(chairId, (msgs) => {
-        pendingRef.current = [...msgs].sort((a, b) => a.createdAt - b.createdAt);
+        pendingRef.current = msgs.filter((m) => m.senderUid !== chairId).sort((a, b) => a.createdAt - b.createdAt);
         setQueueLength(pendingRef.current.filter((m) => !doneIds.current.has(m.id)).length);
         pump();
       });

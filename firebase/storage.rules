@@ -26,7 +26,8 @@ service firebase.storage {
 
     match /chairs/{chairId}/voice/{msgId} {
       // msgId here is the full file name, e.g. "abc123.m4a".
-      allow create: if isMember(chairId)
+      // Family members, and the chair itself (voice replies).
+      allow create: if (isMember(chairId) || isDevice(chairId))
         && msgId.matches('^[A-Za-z0-9]+\\.m4a$')
         && request.resource.size <= 10 * 1024 * 1024
         && request.resource.contentType.matches('audio/.*');

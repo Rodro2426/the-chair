@@ -19,6 +19,7 @@ export {
 
 export {
   markPlayed,
+  markReplyHeard,
   subscribeUnplayed,
   subscribeLatestPhoto,
   sendVoice,

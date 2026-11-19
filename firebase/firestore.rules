@@ -140,11 +140,15 @@ service cloud.firestore {
 
       match /messages/{msgId} {
         allow read: if isDeviceOf(chairId) || isMemberOf(chairId);
-        allow create: if isFamily() && isMemberOf(chairId) && validMessage(request.resource.data, msgId);
-        // Only the chair device marks messages as played.
-        allow update: if isDeviceOf(chairId)
-          && changedOnly(['playedAt'])
-          && request.resource.data.playedAt is number;
+        // Family members send voice/text/photo; the chair device can send voice replies.
+        allow create: if validMessage(request.resource.data, msgId) && (
+          (isFamily() && isMemberOf(chairId))
+          || (isDeviceOf(chairId) && request.resource.data.type == 'voice'));
+        // The chair marks family messages as played; family marks the chair's replies as heard.
+        allow update: if changedOnly(['playedAt'])
+          && request.resource.data.playedAt is number
+          && (isDeviceOf(chairId)
+              || (isMemberOf(chairId) && resource.data.senderUid == chairData(chairId).deviceUid));
         allow delete: if signedIn()
           && resource.data.senderUid == me()
           && isMemberOf(chairId);

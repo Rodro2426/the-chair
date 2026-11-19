@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Txt } from '@/components/ui/Txt';
 import { colors, colorsUi } from '@/theme/tokens';
+import { getSharedWebAudio } from '@/hooks/chair/playback';
 
 /**
  * Browsers block sound until the page is tapped once. On web, the chair shows a
@@ -25,9 +26,14 @@ export function WebAudioUnlock() {
         src.start(0);
         ctx.resume?.();
       }
-      // A silent <audio> play also unlocks HTMLAudioElement playback on iOS Safari.
-      const a = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
-      a.play().catch(() => {});
+      // Unlock the ONE <audio> element the chair plays every message through (iOS Safari).
+      const a = getSharedWebAudio();
+      if (a) {
+        a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+        a.play().catch(() => {});
+      }
+      // Ask for the microphone now (inside the tap) so replies work without a second prompt.
+      navigator.mediaDevices?.getUserMedia?.({ audio: true }).then((s) => s.getTracks().forEach((t) => t.stop())).catch(() => {});
       if (w.speechSynthesis) {
         const u = new w.SpeechSynthesisUtterance(' ');
         u.volume = 0;

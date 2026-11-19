@@ -56,7 +56,20 @@ async function uploadMedia(path: string, uri: string, kind: 'audio' | 'image'): 
   const blob = await uriToBlob(uri);
   const contentType = kind === 'audio' ? audioContentType(uri, blob) : imageContentType(blob);
   const r = storageRef(storage, path);
-  await uploadBytes(r, blob, { contentType });
+  // Never hang on "Sending…": give up after 45s with a clear message.
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      uploadBytes(r, blob, { contentType }),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(
+          'Upload timed out. Check your connection — and that Firebase Storage is set up for this project.',
+        )), 45_000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
   // Release native blob memory where supported (React Native).
   (blob as Blob & { close?: () => void }).close?.();
   return getDownloadURL(r);
@@ -139,6 +152,11 @@ export function subscribeMessages(chairId: string, cb: (msgs: ChairMessage[]) =>
 // ---------- Chair device side ----------
 
 export async function markPlayed(chairId: string, messageId: string): Promise<void> {
+  await updateDoc(messageDoc(chairId, messageId), { playedAt: Date.now() });
+}
+
+/** Family side: mark a voice reply from the chair as heard. */
+export async function markReplyHeard(chairId: string, messageId: string): Promise<void> {
   await updateDoc(messageDoc(chairId, messageId), { playedAt: Date.now() });
 }
 

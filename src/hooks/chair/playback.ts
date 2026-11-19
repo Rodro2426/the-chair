@@ -1,6 +1,7 @@
 // Low-level, promise-based playback helpers for the chair receiver.
 import { createAudioPlayer, setAudioModeAsync, type AudioStatus } from 'expo-audio';
 import * as Speech from 'expo-speech';
+import { Platform } from 'react-native';
 
 export const SPEECH_RATE = 0.85;
 
@@ -49,6 +50,47 @@ export function speakAsync(text: string, opts: { rate?: number; volume?: number 
 export type CancelHandle = { cancel: () => void };
 
 /**
+ * Web only: browsers (iPhone Safari especially) only let an <audio> element play
+ * without a tap if that same element was started by a tap before. WebAudioUnlock
+ * plays silence on this shared element; every message then reuses it.
+ */
+export function getSharedWebAudio(): HTMLAudioElement | null {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return null;
+  const w = window as unknown as { __chairAudio?: HTMLAudioElement };
+  if (!w.__chairAudio) {
+    const a = new Audio();
+    a.preload = 'auto';
+    a.setAttribute('playsinline', 'true');
+    w.__chairAudio = a;
+  }
+  return w.__chairAudio;
+}
+
+function playWebAudio(uri: string, opts: { volume: number; expectedMs?: number; handle?: CancelHandle }, a: HTMLAudioElement): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (err?: Error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(guard);
+      a.onended = null;
+      a.onerror = null;
+      try { a.pause(); } catch {}
+      if (err) reject(err); else resolve();
+    };
+    const guard = setTimeout(() => finish(new Error('audio playback timeout')),
+      opts.expectedMs ? opts.expectedMs + 30000 : 10 * 60 * 1000);
+    if (opts.handle) opts.handle.cancel = () => finish();
+    a.onended = () => finish();
+    a.onerror = () => finish(new Error('audio could not be played'));
+    a.volume = clamp01(opts.volume);
+    a.src = uri;
+    a.currentTime = 0;
+    a.play().catch((e) => finish(e instanceof Error ? e : new Error(String(e))));
+  });
+}
+
+/**
  * Play a remote audio file to the end. Resolves on finish, rejects on load/playback error
  * or timeout. `handle.cancel()` stops playback and resolves.
  */
@@ -56,6 +98,8 @@ export function playUrlAsync(
   uri: string,
   opts: { volume: number; expectedMs?: number; handle?: CancelHandle },
 ): Promise<void> {
+  const webAudio = getSharedWebAudio();
+  if (webAudio) return playWebAudio(uri, opts, webAudio);
   return new Promise((resolve, reject) => {
     let settled = false;
     let started = false;

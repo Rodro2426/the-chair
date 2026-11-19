@@ -15,7 +15,7 @@ export function NowPlayingOverlay({ nowPlaying, compact }: { nowPlaying: NowPlay
   const sphere = Math.round(Math.min(width * (compact ? 0.42 : 0.24), height * (showText ? 0.2 : 0.3)));
 
   return (
-    <Animated.View entering={FadeIn.duration(600)} exiting={FadeOut.duration(700)} style={styles.scrim} pointerEvents="none">
+    <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(500)} style={styles.scrim} pointerEvents="none">
       <Grain />
       <Text style={styles.label}>{label.toUpperCase()}</Text>
       <ChairSphere size={sphere} active />

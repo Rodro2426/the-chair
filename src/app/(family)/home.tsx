@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { space } from '@/theme/tokens';
 import { ScreenBackground, Sheet, SheetOption, Txt, useToast } from '@/components/ui';
 import { HomeTopBar, TalkSphere, WeekRow, isChairOnline } from '@/components/family';
+import { ReplyBanner } from '@/components/family/ReplyBanner';
 import { sendVoice } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useChairs } from '@/hooks/useChairs';
@@ -28,6 +29,11 @@ export default function Home() {
 
   const sentAt = useMemo(() => messages.map((m) => m.createdAt), [messages]);
   const mine = messages.find((m) => m.senderUid === user?.uid);
+  // Voice replies recorded on the chair that nobody has listened to yet (oldest first).
+  const replies = useMemo(
+    () => (selected ? messages.filter((m) => m.senderUid === selected.deviceUid && !m.playedAt).reverse() : []),
+    [messages, selected],
+  );
   const heard = !!mine?.playedAt;
 
   const onSend = useCallback(async (rec: RecordingResult) => {
@@ -65,6 +71,8 @@ export default function Home() {
             onDisabledPress={() => router.push('/link')}
           />
         </View>
+
+        {selected && replies.length > 0 ? <ReplyBanner chairId={selected.id} replies={replies} /> : null}
 
         <WeekRow sentAt={sentAt} now={now} dim={!selected} onPress={selected ? () => router.push('/history') : undefined} />
       </View>
