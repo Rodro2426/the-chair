@@ -21,7 +21,12 @@ const head = `
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="${base}/apple-touch-icon.png">
 `;
-if (!html.includes('rel="manifest"')) html = html.replace('</head>', `${head}</head>`);
+// One solid colour behind everything — including the iPhone home-indicator strip and
+// overscroll areas, which otherwise show the page's default white.
+const BG = '#2B2019';
+const solid = `<style id="the-chair-solid">html,body{background-color:${BG};}html{height:100%;}body{min-height:100%;min-height:100dvh;}#root{background-color:${BG};}</style>`;
+if (!html.includes('rel="manifest"')) html = html.replace('</head>', `${head}${solid}\n</head>`);
+html = html.replace(/<meta name="theme-color" content="[^"]*">/, `<meta name="theme-color" content="${BG}">`);
 // Full-bleed under the notch / home indicator, and no pinch-zoom jumps on inputs.
 html = html.replace(
   /<meta name="viewport"[^>]*>/,

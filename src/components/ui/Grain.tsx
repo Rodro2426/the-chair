@@ -5,6 +5,7 @@ const grain = require('../../../assets/grain.png');
 
 /** Tiling film-grain overlay. Put it last inside a relatively-positioned container. */
 export function Grain({ opacity = brand.grainOpacity, style }: { opacity?: number; style?: StyleProp<ViewStyle> }) {
+  if (!opacity) return null;
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity, overflow: 'hidden' }, style]}>
       <Image source={grain} resizeMode="repeat" style={styles.fill} />

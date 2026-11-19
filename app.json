@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#1D1D1D",
+        "backgroundColor": "#2B2019",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -33,11 +33,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "backgroundColor": "#1D1D1D",
+      "backgroundColor": "#2B2019",
       "output": "single",
       "name": "The Chair",
       "shortName": "The Chair",
-      "themeColor": "#1D1D1D"
+      "themeColor": "#2B2019"
     },
     "scheme": "thechair",
     "plugins": [
@@ -49,7 +49,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#1D1D1D"
+          "backgroundColor": "#2B2019"
         }
       ],
       [
@@ -71,6 +71,6 @@
       "typedRoutes": true,
       "baseUrl": "/the-chair"
     },
-    "backgroundColor": "#1D1D1D"
+    "backgroundColor": "#2B2019"
   }
 }

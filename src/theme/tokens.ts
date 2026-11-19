@@ -1,4 +1,4 @@
-// The Chair design tokens — graphite, grain, one glossy sphere, mono type.
+// The Chair design tokens — solid espresso brown, one glossy sphere, mono type.
 // See docs/BRAND.md. Key names are stable (screens import them); values are the brand.
 
 /** Font family names, loaded in src/app/_layout.tsx with useFonts. */
@@ -12,10 +12,10 @@ export const fonts = {
 };
 
 export const colors = {
-  bg: '#1D1D1D', // graphite
-  bgElevated: '#252525',
-  card: '#232323',
-  cardBorder: 'rgba(255,255,255,0.09)',
+  bg: '#2B2019', // espresso brown — the whole app is this one solid colour
+  bgElevated: '#362920',
+  card: '#33271F',
+  cardBorder: 'rgba(255,240,225,0.10)',
   text: '#F2EFEA', // warm off-white
   textMuted: 'rgba(242,239,234,0.72)',
   textFaint: 'rgba(242,239,234,0.46)',
@@ -33,13 +33,13 @@ export const colors = {
 
 /** Brand-only extras. */
 export const brand = {
-  black: '#0B0B0B', // wells, day circles, code circles
-  well: '#0E0E0E',
+  black: '#150F0B', // wells, day circles, code circles (warm near-black)
+  well: '#18110D',
   white: '#FFFFFF',
-  grey: '#8A8A8A',
-  greyDark: '#3A3A3A',
-  divider: 'rgba(255,255,255,0.08)',
-  grainOpacity: 0.6,
+  grey: '#A39282',
+  greyDark: '#4C3D32',
+  divider: 'rgba(255,240,225,0.09)',
+  grainOpacity: 0, // solid colour: no texture
 };
 
 export const gradients = {
@@ -47,7 +47,7 @@ export const gradients = {
   voice: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
   photo: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
   text: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
-  background: ['#1F1F1F', '#1B1B1B'] as const,
+  background: ['#2B2019', '#2B2019'] as const,
 };
 
 // Sharp edges: rectangles, not pills. Real circles (sphere, day dots, code dots, play) use size/2.
@@ -73,19 +73,19 @@ export const shadow = {
 };
 
 export const gradientsUi = {
-  neutral: ['#2A2A2A', '#222222', '#1A1A1A'] as const,
+  neutral: ['#3A2C22', '#32261E', '#2A1F18'] as const,
   danger: ['#FF8A7E', '#FF6F61', '#C9473B'] as const,
   gloss: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)'] as const,
   glossSoft: ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0)'] as const,
 };
 
 export const colorsUi = {
-  depthNeutral: '#0B0B0B',
+  depthNeutral: '#150F0B',
   dangerDeep: '#8E2E25',
   highlightEdge: 'rgba(255,255,255,0.18)',
   scrim: 'rgba(0,0,0,0.66)',
   inputBg: 'rgba(255,255,255,0.03)',
   inputBorder: 'rgba(255,255,255,0.14)',
-  onAccent: '#0B0B0B', // text on white / yellow
+  onAccent: '#150F0B', // text on white / yellow
   onAccentLight: '#FFFFFF',
 };

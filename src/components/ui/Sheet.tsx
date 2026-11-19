@@ -44,7 +44,7 @@ export function SheetOption({ label, hint, icon, onPress, active }: {
 const styles = StyleSheet.create({
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   sheet: {
-    backgroundColor: '#202020', borderTopLeftRadius: radius.md, borderTopRightRadius: radius.md, overflow: 'hidden',
+    backgroundColor: colors.bgElevated, borderTopLeftRadius: radius.md, borderTopRightRadius: radius.md, overflow: 'hidden',
     paddingTop: space.sm, paddingHorizontal: space.lg, width: '100%', maxWidth: 640, alignSelf: 'center',
     borderWidth: 1, borderBottomWidth: 0, borderColor: brand.divider,
   },

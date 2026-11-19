@@ -85,7 +85,7 @@ export function MessageBubble({ msg, mine, player }: { msg: ChairMessage; mine: 
 
 const styles = StyleSheet.create({
   bubble: { maxWidth: '88%', borderRadius: radius.sm, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-  mine: { alignSelf: 'flex-end', backgroundColor: '#262626' },
+  mine: { alignSelf: 'flex-end', backgroundColor: colors.bgElevated },
   theirs: { alignSelf: 'flex-start', backgroundColor: brand.black },
   voice: { width: 300, padding: space.md, gap: space.md },
   voiceRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },

@@ -31,7 +31,7 @@ export function NowPlayingOverlay({ nowPlaying, compact }: { nowPlaying: NowPlay
 const styles = StyleSheet.create({
   scrim: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(28,28,28,0.99)',
+    backgroundColor: colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
     padding: space.xl,
