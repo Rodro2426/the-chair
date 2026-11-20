@@ -10,10 +10,12 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
-import { deleteObject, getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
+import { deleteObject, ref as storageRef } from 'firebase/storage';
 import type { ChairMessage, MessageType, Unsubscribe } from '@/types';
-import { requireUser, storage } from './firebase';
+import { db, requireUser, storage } from './firebase';
+import { addMediaToBatch, deleteMediaInBatch, isFirestoreMedia, shrinkImageForUpload } from './media';
 import { currentSenderName } from './auth';
 import { messageDoc, messagesCol, photoPath, toMessage, voicePath } from './paths';
 
@@ -52,30 +54,7 @@ function imageContentType(blob: Blob): string {
   return blob.type?.startsWith('image/') ? blob.type : 'image/jpeg';
 }
 
-async function uploadMedia(path: string, uri: string, kind: 'audio' | 'image'): Promise<string> {
-  const blob = await uriToBlob(uri);
-  const contentType = kind === 'audio' ? audioContentType(uri, blob) : imageContentType(blob);
-  const r = storageRef(storage, path);
-  // Never hang on "Sending…": give up after 45s with a clear message.
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  try {
-    await Promise.race([
-      uploadBytes(r, blob, { contentType }),
-      new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error(
-          'Upload timed out. Check your connection — and that Firebase Storage is set up for this project.',
-        )), 45_000);
-      }),
-    ]);
-  } finally {
-    clearTimeout(timer);
-  }
-  // Release native blob memory where supported (React Native).
-  (blob as Blob & { close?: () => void }).close?.();
-  return getDownloadURL(r);
-}
-
-async function writeMessage(
+async function buildMessage(
   chairId: string,
   msgId: string,
   type: MessageType,
@@ -92,22 +71,42 @@ async function writeMessage(
     playedAt: null,
   };
   for (const [k, v] of Object.entries(extra)) if (v !== undefined) (msg as unknown as Record<string, unknown>)[k] = v;
+  return msg;
+}
+
+/** Writes media chunks + the message in one atomic batch (the chair only sees complete messages). */
+async function sendWithMedia(
+  chairId: string, type: 'voice' | 'photo', fileUri: string,
+  extra: Partial<Pick<ChairMessage, 'text' | 'durationMs'>>,
+): Promise<ChairMessage> {
+  const user = requireUser();
+  const msgId = doc(messagesCol(chairId)).id;
+  let blob = await uriToBlob(fileUri);
+  if (type === 'photo') blob = await shrinkImageForUpload(blob);
+  const mime = type === 'voice' ? audioContentType(fileUri, blob) : imageContentType(blob);
+  const batch = writeBatch(db);
+  const mediaUrl = await addMediaToBatch(batch, chairId, msgId, user.uid, blob, mime);
+  const mediaPath = type === 'voice' ? voicePath(chairId, msgId) : photoPath(chairId, msgId);
+  const msg = await buildMessage(chairId, msgId, type, { ...extra, mediaPath, mediaUrl });
   const { id: _id, ...data } = msg;
-  await setDoc(messageDoc(chairId, msgId), data);
+  batch.set(messageDoc(chairId, msgId), data);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      batch.commit(),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Sending timed out. Please check your connection and try again.')), 60_000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
   return msg;
 }
 
 /** fileUri: local recording URI from expo-audio. */
 export async function sendVoice(chairId: string, fileUri: string, durationMs: number): Promise<ChairMessage> {
-  requireUser();
-  const msgId = doc(messagesCol(chairId)).id;
-  const path = voicePath(chairId, msgId);
-  const mediaUrl = await uploadMedia(path, fileUri, 'audio');
-  return writeMessage(chairId, msgId, 'voice', {
-    mediaPath: path,
-    mediaUrl,
-    durationMs: Math.max(0, Math.round(durationMs)),
-  });
+  return sendWithMedia(chairId, 'voice', fileUri, { durationMs: Math.max(0, Math.round(durationMs)) });
 }
 
 export async function sendText(chairId: string, text: string): Promise<ChairMessage> {
@@ -115,28 +114,31 @@ export async function sendText(chairId: string, text: string): Promise<ChairMess
   if (!clean) throw new Error('Message is empty.');
   if (clean.length > MAX_TEXT_LENGTH) throw new Error(`Message is too long (max ${MAX_TEXT_LENGTH} characters).`);
   const msgId = doc(messagesCol(chairId)).id;
-  return writeMessage(chairId, msgId, 'text', { text: clean });
+  const msg = await buildMessage(chairId, msgId, 'text', { text: clean });
+  const { id: _id, ...data } = msg;
+  await setDoc(messageDoc(chairId, msgId), data);
+  return msg;
 }
 
 /** imageUri: local image URI from expo-image-picker. */
 export async function sendPhoto(chairId: string, imageUri: string, caption?: string): Promise<ChairMessage> {
-  requireUser();
   const cap = caption?.trim();
   if (cap && cap.length > MAX_TEXT_LENGTH) throw new Error(`Caption is too long (max ${MAX_TEXT_LENGTH} characters).`);
-  const msgId = doc(messagesCol(chairId)).id;
-  const path = photoPath(chairId, msgId);
-  const mediaUrl = await uploadMedia(path, imageUri, 'image');
-  return writeMessage(chairId, msgId, 'photo', { mediaPath: path, mediaUrl, text: cap || undefined });
+  return sendWithMedia(chairId, 'photo', imageUri, { text: cap || undefined });
 }
 
 /** Deletes one of your own messages (and its media file, if any). */
-export async function deleteMessage(chairId: string, message: Pick<ChairMessage, 'id' | 'mediaPath'>): Promise<void> {
-  if (message.mediaPath) {
+export async function deleteMessage(chairId: string, message: Pick<ChairMessage, 'id' | 'mediaPath' | 'mediaUrl'>): Promise<void> {
+  if (message.mediaPath && message.mediaUrl && !isFirestoreMedia(message.mediaUrl)) {
+    // Older messages stored in Cloud Storage.
     await deleteObject(storageRef(storage, message.mediaPath)).catch((e) => {
       if ((e as { code?: string }).code !== 'storage/object-not-found') throw e;
     });
   }
-  await deleteDoc(messageDoc(chairId, message.id));
+  const batch = writeBatch(db);
+  deleteMediaInBatch(batch, chairId, message);
+  batch.delete(messageDoc(chairId, message.id));
+  await batch.commit();
 }
 
 /** Newest first, for the conversation/history list. */

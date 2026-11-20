@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import type { ChairMessage } from '@/types';
+import { resolveMediaUrl } from '@/lib/api';
 
 /**
  * One shared expo-audio player for a whole conversation list: only one voice
@@ -29,7 +30,9 @@ export function useMessagePlayer() {
       }
       return;
     }
-    player.replace({ uri: msg.mediaUrl });
+    const uri = await resolveMediaUrl(msg);
+    if (!uri) return;
+    player.replace({ uri });
     setActiveId(msg.id);
     player.play();
   }, [activeId, player, status.playing, status.currentTime, status.duration]);

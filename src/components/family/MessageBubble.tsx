@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { brand, colors, radius, space } from '@/theme/tokens';
 import type { ChairMessage } from '@/types';
+import { useMediaUrl } from '@/lib/api';
 import { Icon, PressableScale, Txt } from '@/components/ui';
 import type { MessagePlayer } from '@/hooks/useMessagePlayer';
 import { clockTime, mmss } from './format';
@@ -59,11 +60,16 @@ function VoiceBubble({ msg, mine, player }: { msg: ChairMessage; mine: boolean; 
 /** One message of the conversation (voice / photo / text) — monochrome, square-cornered. */
 export function MessageBubble({ msg, mine, player }: { msg: ChairMessage; mine: boolean; player: MessagePlayer }) {
   if (msg.type === 'voice') return <VoiceBubble msg={msg} mine={mine} player={player} />;
-  if (msg.type === 'photo') {
-    return (
+  if (msg.type === 'photo') return <PhotoBubble msg={msg} mine={mine} />;
+  return <TextBubble msg={msg} mine={mine} />;
+}
+
+function PhotoBubble({ msg, mine }: { msg: ChairMessage; mine: boolean }) {
+  const photoUri = useMediaUrl(msg);
+  return (
       <View style={[styles.bubble, styles.photo, mine ? styles.mine : styles.theirs]}>
-        {msg.mediaUrl ? (
-          <Image source={{ uri: msg.mediaUrl }} style={styles.photoImg} contentFit="cover" transition={250} />
+        {photoUri ? (
+          <Image source={{ uri: photoUri }} style={styles.photoImg} contentFit="cover" transition={250} />
         ) : (
           <View style={[styles.photoImg, styles.photoPlaceholder]}><Icon name="photo" size={36} color={colors.textFaint} /></View>
         )}
@@ -73,8 +79,10 @@ export function MessageBubble({ msg, mine, player }: { msg: ChairMessage; mine: 
           <Meta msg={msg} mine={mine} />
         </View>
       </View>
-    );
-  }
+  );
+}
+
+function TextBubble({ msg, mine }: { msg: ChairMessage; mine: boolean }) {
   return (
     <View style={[styles.bubble, styles.text, mine ? styles.mine : styles.theirs]}>
       <Txt variant="body" style={{ fontSize: 18, lineHeight: 27 }}>{msg.text}</Txt>

@@ -18,7 +18,12 @@ export type FinishMode = 'send' | 'cancel';
 export interface RecordingResult { uri: string; durationMs: number }
 export type FinishReason = 'sent' | 'cancelled' | 'too-short' | 'max-length' | 'denied' | 'mic-ready' | 'error';
 
-const options = { ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true };
+// Voice-quality bitrate on web keeps a 2-minute message well under 1 MB (stored in Firestore).
+const options = {
+  ...RecordingPresets.HIGH_QUALITY,
+  isMeteringEnabled: true,
+  web: { ...RecordingPresets.HIGH_QUALITY.web, bitsPerSecond: 48000 },
+};
 
 /** Converts metering dBFS (-160..0) to a 0..1 visual level. */
 function dbToLevel(db: number | undefined) {

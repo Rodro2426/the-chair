@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { markPlayed, subscribeUnplayed } from '@/lib/api';
+import { markPlayed, resolveMediaUrl, subscribeUnplayed } from '@/lib/api';
 import type { ChairMessage } from '@/types';
 import {
   type CancelHandle,
@@ -60,12 +60,13 @@ export function usePlaybackQueue(chairId: string | null | undefined, volume: num
     if (!alive.current) return;
 
     if (msg.type === 'voice') {
-      if (!msg.mediaUrl) throw new Error('voice message without mediaUrl');
+      const url = await resolveMediaUrl(msg);
+      if (!url) throw new Error('voice message without media');
       setNowPlaying({ msg, phase: 'playing', replay });
       const handle: CancelHandle = { cancel: () => {} };
       cancelRef.current = handle;
       try {
-        await playUrlAsync(msg.mediaUrl, { volume: vol, expectedMs: msg.durationMs, handle });
+        await playUrlAsync(url, { volume: vol, expectedMs: msg.durationMs, handle });
       } finally {
         cancelRef.current = null;
       }

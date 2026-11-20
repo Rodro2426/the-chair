@@ -15,7 +15,7 @@ import { greetingFor, useClock } from '@/hooks/chair/useClock';
 import { useHeartbeat } from '@/hooks/chair/useHeartbeat';
 import { ensureChairAudioMode } from '@/hooks/chair/playback';
 import { usePlaybackQueue } from '@/hooks/chair/usePlaybackQueue';
-import { sendVoice, signOut, subscribeLatestPhoto } from '@/lib/api';
+import { sendVoice, signOut, subscribeLatestPhoto, useMediaUrl } from '@/lib/api';
 import { TalkSphere } from '@/components/family/TalkSphere';
 import { shortName } from '@/components/family/format';
 import { confirmAsync } from '@/hooks/confirm';
@@ -71,7 +71,7 @@ export default function ChairHome() {
     await sendVoice(chairId, rec.uri, rec.durationMs);
   }, [chairId]);
 
-  const photoUri = photo?.mediaUrl;
+  const photoUri = useMediaUrl(photo);
   const firstName = shortName(chair?.name ?? '');
   const greeting = `${greetingFor(now)}, ${firstName}`;
   const [hm, ampm] = splitTime(now);
