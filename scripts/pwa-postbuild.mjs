@@ -24,7 +24,15 @@ const head = `
 // One solid colour behind everything — including the iPhone home-indicator strip and
 // overscroll areas, which otherwise show the page's default white.
 const BG = '#2B2019';
-const solid = `<style id="the-chair-solid">html,body{background-color:${BG};}html{height:100%;}body{min-height:100%;min-height:100dvh;}#root{background-color:${BG};}</style>`;
+const solid = `<style id="the-chair-solid">html,body{background-color:${BG};}html{height:100%;}body{min-height:100%;min-height:100dvh;}#root{background-color:${BG};}`
+  // App, not a web page: no text selection, no long-press callout/magnifier, no grey tap flash.
+  // (Holding the talk sphere was selecting the whole block on iPhone.) Text fields stay editable.
+  + `*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}`
+  + `input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;}`
+  + `img,svg{-webkit-user-drag:none;}</style>`
+  + `<script>(function(){var ok=function(t){return t&&t.closest&&t.closest('input,textarea,[contenteditable="true"]')};`
+  + `document.addEventListener('contextmenu',function(e){if(!ok(e.target))e.preventDefault()});`
+  + `document.addEventListener('selectstart',function(e){if(!ok(e.target))e.preventDefault()});})();</script>`;
 if (!html.includes('rel="manifest"')) html = html.replace('</head>', `${head}${solid}\n</head>`);
 html = html.replace(/<meta name="theme-color" content="[^"]*">/, `<meta name="theme-color" content="${BG}">`);
 // Full-bleed under the notch / home indicator, and no pinch-zoom jumps on inputs.
