@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="ball" cx="62%" cy="36%" r="70%">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#F3EBDD"/><stop offset="1" stop-color="#C9B89F"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="#EFE5DA"/>
+  <g transform="translate(0,18)">
+    <!-- back + wings (one silhouette) -->
+    <path d="M362 300 C362 214 430 176 512 176 C594 176 662 214 662 300 L662 352 C706 344 742 362 750 404 L756 586 L268 586 L274 404 C282 362 318 344 362 352 Z" fill="#83540B"/>
+    <!-- inner back panel -->
+    <path d="M404 312 C404 254 452 230 512 230 C572 230 620 254 620 312 L620 620 L404 620 Z" fill="#6A4208"/>
+    <!-- tufting -->
+    <g fill="#83540B"><circle cx="512" cy="330" r="9"/><circle cx="464" cy="420" r="9"/><circle cx="560" cy="420" r="9"/></g>
+    <!-- fill behind the seat so nothing shows through -->
+    <rect x="360" y="560" width="304" height="160" fill="#6A4208"/>
+    <!-- arms -->
+    <rect x="248" y="520" width="140" height="232" rx="64" fill="#83540B"/>
+    <rect x="636" y="520" width="140" height="232" rx="64" fill="#83540B"/>
+    <rect x="262" y="534" width="112" height="60" rx="30" fill="#A06A1C"/>
+    <rect x="650" y="534" width="112" height="60" rx="30" fill="#A06A1C"/>
+    <!-- seat cushion -->
+    <rect x="372" y="606" width="280" height="96" rx="26" fill="#A06A1C"/>
+    <!-- the sphere, resting on the seat -->
+    <ellipse cx="512" cy="616" rx="58" ry="10" fill="#5E3503" opacity=".45"/>
+    <circle cx="512" cy="562" r="58" fill="#5E3503"/>
+    <circle cx="512" cy="562" r="48" fill="url(#ball)"/>
+    <!-- base / apron -->
+    <rect x="262" y="700" width="500" height="92" rx="28" fill="#5E3503"/>
+    <!-- legs -->
+    <path d="M300 792 h40 l-6 66 h-28 z" fill="#5E3503"/>
+    <path d="M684 792 h40 l-6 66 h-28 z" fill="#5E3503"/>
+  </g>
+</svg>

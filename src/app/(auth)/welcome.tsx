@@ -1,9 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { router, type Href } from 'expo-router';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radius, space } from '@/theme/tokens';
-import { GlossyButton, Icon, PressableScale, ScreenBackground, Sphere, Txt } from '@/components/ui';
+import { GlossyButton, Icon, PressableScale, ScreenBackground, Txt } from '@/components/ui';
 import { setDeviceMode } from '@/hooks/deviceMode';
 
 const enter = (i: number) => FadeInDown.delay(90 * i).duration(500);
@@ -25,7 +25,7 @@ export default function Welcome() {
 
         <View style={styles.hero}>
           <Animated.View entering={FadeIn.duration(900)} style={styles.mark}>
-            <Sphere size={64} ring={6} />
+            <Image source={require('../../../assets/logo-mark.png')} style={{ width: 96, height: 96, marginLeft: -12 }} accessibilityLabel="The Chair logo" />
           </Animated.View>
           <Animated.View entering={enter(1)}>
             <Txt variant="label" tone="faint" style={{ marginBottom: space.md }}>Voice · Photo · Note</Txt>
