@@ -24,7 +24,9 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 export function announcementFor(msg: ChairMessage): string {
   const who = msg.senderName?.trim() || 'your family';
-  return msg.type === 'photo' ? `New photo from ${who}` : `Message from ${who}`;
+  if (msg.type === 'photo') return `New photo from ${who}`;
+  if (msg.type === 'text' && msg.text?.startsWith('Question: ')) return `${who} has a question for you`;
+  return `Message from ${who}`;
 }
 
 /**
@@ -71,7 +73,7 @@ export function usePlaybackQueue(chairId: string | null | undefined, volume: num
         cancelRef.current = null;
       }
     } else if (msg.type === 'text') {
-      const text = msg.text?.trim();
+      const text = msg.text?.replace(/^Question: /, '').trim();
       if (text) {
         setNowPlaying({ msg, phase: 'playing', replay });
         await speakAsync(text, { volume: vol });

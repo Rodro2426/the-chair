@@ -1,100 +1,78 @@
-import { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { space } from '@/theme/tokens';
-import { ScreenBackground, Sheet, SheetOption, Txt, useToast } from '@/components/ui';
-import { HomeTopBar, TalkSphere, WeekRow, isChairOnline } from '@/components/family';
-import { ReplyBanner } from '@/components/family/ReplyBanner';
-import { sendVoice } from '@/lib/api';
-import { useAuth } from '@/hooks/useAuth';
-import { useChairs } from '@/hooks/useChairs';
-import { useMessages, usePhotoSentToday } from '@/hooks/useMessages';
-import { useNow } from '@/hooks/useNow';
-import { friendlyError } from '@/hooks/errors';
-import type { RecordingResult } from '@/hooks/useVoiceRecorder';
+import { brand, colors, radius, space } from '@/theme/tokens';
+import { GlossyButton, Icon, PressableScale, Txt } from '@/components/ui';
+import { Section, StoryCard, TabScreen } from '@/components/family';
+import { useFamily } from '@/hooks/useFamily';
+import { useMessagePlayer } from '@/hooks/useMessagePlayer';
+import { BOX, VISIT, questionOfTheDay, questionText, useHearts } from '@/lib/family';
 
-/** Home: one sphere. Hold it to talk. Everything else is one tap away. */
+/** Home: "This week at grandpa's chair" — today's question, the newest story, the next box and visit. */
 export default function Home() {
-  const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
-  const toast = useToast();
-  const now = useNow(15_000);
-  const { user } = useAuth();
-  const { chairs, loading, selected, select } = useChairs();
-  const { messages } = useMessages(selected?.id, 200);
-  const lastPhotoId = messages.find((m) => m.type === 'photo')?.id;
-  const sentPhotoToday = usePhotoSentToday(selected?.id, lastPhotoId);
-  const [sheet, setSheet] = useState<'add' | 'chairs' | null>(null);
-
-  const sentAt = useMemo(() => messages.map((m) => m.createdAt), [messages]);
-  const mine = messages.find((m) => m.senderUid === user?.uid);
-  // Voice replies recorded on the chair that nobody has listened to yet (oldest first).
-  const replies = useMemo(
-    () => (selected ? messages.filter((m) => m.senderUid === selected.deviceUid && !m.playedAt).reverse() : []),
-    [messages, selected],
-  );
-  const heard = !!mine?.playedAt;
-
-  const onSend = useCallback(async (rec: RecordingResult) => {
-    if (!selected) throw new Error('No chair');
-    try {
-      await sendVoice(selected.id, rec.uri, rec.durationMs);
-    } catch (e) {
-      toast.show(friendlyError(e, 'Couldn’t send that voice message. Please try again.'), 'error');
-      throw e;
-    }
-  }, [selected, toast]);
-
-  const go = (path: '/photo' | '/text') => { setSheet(null); router.push(path); };
-  const sphereSize = Math.round(Math.min(width * 0.62, (height - insets.top - insets.bottom) * 0.34, 320));
+  const { chair, name, stories, questions } = useFamily();
+  const player = useMessagePlayer();
+  const hearts = useHearts();
+  const today = questionOfTheDay();
+  // Today's question: the latest one the family asked, otherwise the suggestion of the day.
+  const latest = questions[0];
+  const qText = latest ? questionText(latest.msg) : today.q;
+  const answered = latest?.answered ?? false;
+  const newest = stories[0];
 
   return (
-    <ScreenBackground>
-      <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom + space.lg }]}>
-        <HomeTopBar
-          title={selected ? selected.name.toUpperCase() : 'THE CHAIR'}
-          online={selected ? isChairOnline(selected, now) : null}
-          onPlus={selected ? () => setSheet('add') : undefined}
-          onTitle={chairs.length > 1 ? () => setSheet('chairs') : undefined}
-          onSettings={() => router.push('/settings')}
-        />
+    <TabScreen kicker="This week at" title={`${name}’s chair`}>
+      {!chair ? (
+        <PressableScale onPress={() => router.push('/link')} style={styles.card} accessibilityRole="button">
+          <Txt variant="heading">Link the chair first</Txt>
+          <Txt variant="body" tone="muted">Enter the 6-digit code shown on the chair to connect your family.</Txt>
+        </PressableScale>
+      ) : null}
 
-        <View style={styles.stage}>
-          <TalkSphere
-            key={selected?.id ?? 'none'}
-            chairName={selected?.name}
-            loading={loading}
-            heard={heard}
-            size={sphereSize}
-            onSend={onSend}
-            onDisabledPress={() => router.push('/link')}
+      <Section title="Today’s question">
+        <View style={styles.card}>
+          <Txt variant="title" style={styles.quote}>“{qText}”</Txt>
+          <View style={styles.statusRow}>
+            <View style={[styles.dot, { backgroundColor: answered ? colors.primary : colors.textFaint }]} />
+            <Txt variant="label" tone={answered ? 'default' : 'muted'} style={styles.small}>
+              {latest ? (answered ? `${name} answered` : `Waiting for ${name}`) : 'Not asked yet'}
+            </Txt>
+          </View>
+          <GlossyButton
+            title={latest ? 'Ask another question' : 'Ask this question'}
+            size="md"
+            onPress={() => router.push({ pathname: '/ask', params: latest ? {} : { q: today.q } })}
           />
         </View>
+      </Section>
 
-        {selected && replies.length > 0 ? <ReplyBanner chairId={selected.id} replies={replies} /> : null}
+      <Section title="Newest story" action={
+        <PressableScale onPress={() => router.replace('/stories')} hapticStyle="select" accessibilityRole="link">
+          <Txt variant="label" style={styles.small}>All stories</Txt>
+        </PressableScale>
+      }>
+        {newest ? (
+          <StoryCard story={newest} player={player} hearted={hearts.has(newest.id)} onHeart={() => hearts.toggle(newest.id)} compact />
+        ) : null}
+      </Section>
 
-        <WeekRow sentAt={sentAt} now={now} dim={!selected} onPress={selected ? () => router.push('/history') : undefined} />
-      </View>
-
-      <Sheet visible={sheet === 'add'} onClose={() => setSheet(null)}>
-        <SheetOption label="Photo of the day" icon="photo"
-          hint={sentPhotoToday ? 'Sent today · a new one replaces it' : 'Shown big on the chair'} onPress={() => go('/photo')} />
-        <SheetOption label="Write a note" icon="text" hint="Read out loud" onPress={() => go('/text')} />
-      </Sheet>
-
-      <Sheet visible={sheet === 'chairs'} onClose={() => setSheet(null)}>
-        <Txt variant="caption" tone="faint" upper style={{ marginBottom: space.sm }}>Send to</Txt>
-        {chairs.map((c) => (
-          <SheetOption key={c.id} label={c.name} active={c.id === selected?.id}
-            hint={isChairOnline(c, now) ? 'In the chair' : 'Offline'} onPress={() => { select(c.id); setSheet(null); }} />
-        ))}
-      </Sheet>
-    </ScreenBackground>
+      <PressableScale onPress={() => router.push('/box')} style={[styles.card, styles.reminder]} accessibilityRole="button"
+        accessibilityLabel={`Next box arrives ${BOX.arrives}. Visit on ${VISIT.day}?`}>
+        <Icon name="box" size={26} color={colors.text} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <Txt variant="heading">Next box arrives {BOX.arrives}</Txt>
+          <Txt variant="label" tone="muted" style={styles.small}>Visit on {VISIT.day}?</Txt>
+        </View>
+        <Icon name="chevron" size={20} color={colors.textFaint} />
+      </PressableScale>
+    </TabScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, width: '100%', maxWidth: 640, alignSelf: 'center' },
-  stage: { flex: 1, justifyContent: 'center' },
+  card: { gap: space.md, padding: space.lg, borderRadius: radius.sm, borderWidth: 1, borderColor: brand.divider, backgroundColor: colors.bgElevated },
+  quote: { fontSize: 32, lineHeight: 38 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  small: { fontSize: 12, letterSpacing: 1.4 },
+  reminder: { flexDirection: 'row', alignItems: 'center' },
 });

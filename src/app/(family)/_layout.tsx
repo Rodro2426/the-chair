@@ -20,7 +20,12 @@ export default function FamilyLayout() {
   return (
     <ChairsProvider uid={user.uid}>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'slide_from_right' }}>
-        <Stack.Screen name="home" options={{ animation: 'fade' }} />
+        {/* Tabs switch instantly; Story Box and the rest slide in. */}
+        <Stack.Screen name="home" options={{ animation: 'none' }} />
+        <Stack.Screen name="stories" options={{ animation: 'none' }} />
+        <Stack.Screen name="talk" options={{ animation: 'none' }} />
+        <Stack.Screen name="ask" options={{ animation: 'none' }} />
+        <Stack.Screen name="family" options={{ animation: 'none' }} />
         <Stack.Screen name="text" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="photo" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="link" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />

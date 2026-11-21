@@ -67,7 +67,7 @@ export default function History() {
 
       <View style={[styles.bar, { paddingBottom: insets.bottom + space.sm }]}>
         <Action icon="photo" label="Photo" onPress={() => router.push('/photo')} />
-        <Action icon="mic" label="Talk" onPress={() => router.navigate('/home')} />
+        <Action icon="mic" label="Talk" onPress={() => router.navigate('/talk')} />
         <Action icon="text" label="Note" onPress={() => router.push('/text')} />
       </View>
     </ScreenBackground>

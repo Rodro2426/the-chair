@@ -117,6 +117,25 @@ const icons = {
       <Polyline points="10.5,2 7.5,5 10.5,8" fill="none" stroke={c} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
+  home: (c, w) => <Path d="M4 11l8-7 8 7M6 9.5V20h12V9.5" fill="none" stroke={c} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />,
+  book: (c, w) => <Path d="M4 5h6a2 2 0 012 2v13a2 2 0 00-2-2H4zM20 5h-6a2 2 0 00-2 2v13a2 2 0 012-2h6z" fill="none" stroke={c} strokeWidth={w} strokeLinejoin="round" />,
+  question: (c, w) => (
+    <>
+      <Circle cx="12" cy="12" r="9" fill="none" stroke={c} strokeWidth={w} />
+      <Path d="M9.5 9.5a2.5 2.5 0 114 2c-1 .7-1.5 1.2-1.5 2.5" fill="none" stroke={c} strokeWidth={w} strokeLinecap="round" />
+      <Circle cx="12" cy="17" r="1.1" fill={c} />
+    </>
+  ),
+  box: (c, w) => <Path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5zM3.5 7.5L12 12l8.5-4.5M12 12v9" fill="none" stroke={c} strokeWidth={w} strokeLinejoin="round" />,
+  search: (c, w) => (
+    <>
+      <Circle cx="10.5" cy="10.5" r="6" fill="none" stroke={c} strokeWidth={w} />
+      <Path d="M15 15l5 5" stroke={c} strokeWidth={w} strokeLinecap="round" />
+    </>
+  ),
+  comment: (c, w) => <Path d="M4 5h16v11H9l-5 4z" fill="none" stroke={c} strokeWidth={w} strokeLinejoin="round" />,
+  heartFilled: (c, w) => <Path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0112 7.4 4.3 4.3 0 0119.5 10C19.5 15.4 12 20 12 20z" fill={c} stroke={c} strokeWidth={w} strokeLinejoin="round" />,
+  bell: (c, w) => <Path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15zM10 20.5h4" fill="none" stroke={c} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />,
 } satisfies Record<string, Draw>;
 
 export type IconName = keyof typeof icons;
