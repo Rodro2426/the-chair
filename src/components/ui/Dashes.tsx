@@ -12,6 +12,7 @@ export interface Dash {
   color: string;
   opacity: number;
   gain: number; // how strongly it reacts to level/burst
+  far: number; // 0..1: how far across the screen it travels when the field spreads
 }
 
 /** Deterministic burst of short bars (+ a few small squares) around a sphere of radius `r`. */
@@ -36,18 +37,36 @@ export function makeDashes(r: number, count = 18, seed = 7, accent?: string, kee
       color: square ? brand.lavender : accent && i === 3 ? accent : colors.primary,
       opacity: square ? 0.7 : 0.85 + rnd() * 0.15,
       gain: 0.4 + rnd() * 0.9,
+      far: 0.12 + rnd() * 0.88,
     });
   }
   return out;
 }
 
-function DashView({ d, r, level, burst, glow }: {
+function DashView({ d, r, level, burst, glow, spread, reach = 0 }: {
   d: Dash; r: number; level?: SharedValue<number>; burst?: SharedValue<number>; glow?: SharedValue<number>;
+  spread?: SharedValue<number>; reach?: number;
 }) {
   const style = useAnimatedStyle(() => {
     const l = level ? level.value : 0;
     const b = burst ? burst.value : 0;
     const g = glow ? glow.value : 0;
+    if (spread) {
+      // Hidden at rest; on press they shoot out from the sphere's edge across the whole screen.
+      const s = spread.value;
+      const dist = r * 1.08 + s * d.far * reach + l * r * 0.45 * d.gain + b * reach * 0.35 * d.gain;
+      const x = Math.cos(d.angle) * dist;
+      const y = Math.sin(d.angle) * dist;
+      return {
+        opacity: d.opacity * Math.min(1, s * 1.4) * (1 - b),
+        transform: [
+          { translateX: x - d.len / 2 },
+          { translateY: y - d.thick / 2 },
+          { rotate: `${d.angle + d.rot}rad` },
+          { scaleX: (0.4 + s * 0.6) * (1 + l * 1.1 * d.gain) },
+        ],
+      };
+    }
     const dist = d.dist * r + l * r * 0.32 * d.gain + b * r * 0.55 * d.gain + g * r * 0.12 * d.gain;
     const x = Math.cos(d.angle) * dist;
     const y = Math.sin(d.angle) * dist;
@@ -69,17 +88,19 @@ function DashView({ d, r, level, burst, glow }: {
  * `level` (mic/voice 0..1) pushes them out and stretches them; `burst` (0..1)
  * flings them outward and fades them; `glow` (0..1) is a calm breathing offset.
  */
-export function Dashes({ r, count = 18, seed = 7, accent, level, burst, glow, insideOnly, outsideOnly, keepClearBelow }: {
+export function Dashes({ r, count = 18, seed = 7, accent, level, burst, glow, insideOnly, outsideOnly, keepClearBelow, spread, reach }: {
   r: number; count?: number; seed?: number; accent?: string;
   level?: SharedValue<number>; burst?: SharedValue<number>; glow?: SharedValue<number>;
   insideOnly?: boolean; outsideOnly?: boolean; keepClearBelow?: boolean;
+  /** 0..1: when given, the dashes are hidden at 0 and fly out across `reach` px at 1. */
+  spread?: SharedValue<number>; reach?: number;
 }) {
   const dashes = useMemo(() => makeDashes(r, count, seed, accent, keepClearBelow), [r, count, seed, accent, keepClearBelow]);
-  const list = dashes.filter((d) => (insideOnly ? d.dist < 1 : outsideOnly ? d.dist >= 1 : true));
+  const list = dashes.filter((d) => (spread || outsideOnly ? d.dist >= 1 : insideOnly ? d.dist < 1 : true));
   return (
     <View pointerEvents="none" style={styles.field}>
       <View style={styles.origin}>
-        {list.map((d, i) => <DashView key={i} d={d} r={r} level={level} burst={burst} glow={glow} />)}
+        {list.map((d, i) => <DashView key={i} d={d} r={r} level={level} burst={burst} glow={glow} spread={spread} reach={reach} />)}
       </View>
     </View>
   );

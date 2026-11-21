@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PanResponder, Platform, StyleSheet, View } from 'react-native';
+import { PanResponder, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming,
 } from 'react-native-reanimated';
@@ -54,6 +54,10 @@ export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress,
   const burst = useSharedValue(0);
   const check = useSharedValue(0);
   const breathe = useSharedValue(0);
+  // Sparks: hidden at rest, spread across the screen while you hold the sphere.
+  const spread = useSharedValue(0);
+  const { width: winW, height: winH } = useWindowDimensions();
+  const reach = Math.hypot(winW, winH) * 0.5;
 
   const settle = useCallback((next: SpherePhase, ms: number) => {
     setUi(next);
@@ -70,10 +74,12 @@ export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress,
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       check.value = withTiming(0, { duration: 260 });
-      burst.value = withDelay(120, withTiming(0, { duration: 800, easing: Easing.out(Easing.cubic) }));
+      // The sparks have already flown off and faded: tuck them away for the next press.
+      spread.value = 0;
+      burst.value = 0;
       setUi('idle');
     }, SENT_HOLD_MS);
-  }, [burst, check]);
+  }, [burst, check, spread]);
 
   const rec = useVoiceRecorder((result, reason) => {
     setWillCancel(false);
@@ -106,6 +112,18 @@ export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress,
     }, 400);
     return () => clearInterval(id);
   }, [recording]);
+
+  // Sparks: fly out across the screen while holding/sending, pull back in when cancelling, gone at rest.
+  useEffect(() => {
+    if (demo) { spread.value = demo.phase === 'holding' || demo.phase === 'sent' ? 1 : 0; return; }
+    if (phase === 'holding') {
+      spread.value = withTiming(willCancel ? 0.3 : 1, { duration: willCancel ? 260 : 560, easing: Easing.out(Easing.cubic) });
+    } else if (phase === 'sending' || phase === 'sent') {
+      spread.value = withTiming(1, { duration: 300 });
+    } else {
+      spread.value = withTiming(0, { duration: 380, easing: Easing.in(Easing.quad) });
+    }
+  }, [demo, phase, willCancel, spread]);
 
   // Mic level → dashes.
   const lastLevel = rec.levels[rec.levels.length - 1] ?? 0;
@@ -217,7 +235,7 @@ export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress,
             {sphere}
           </View>
         )}
-        {!disabled && !loading && <Dashes r={r} level={level} burst={burst} keepClearBelow />}
+        {!disabled && !loading && <Dashes r={r} level={level} burst={burst} spread={spread} reach={reach} count={44} seed={13} />}
       </View>
 
       <View style={[styles.status, big && styles.statusBig]}>
