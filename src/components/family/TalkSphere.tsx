@@ -27,6 +27,8 @@ export interface TalkSphereProps {
   idleLabel?: string;
   /** Larger status text (chair / older users). */
   big?: boolean;
+  /** Cream status text, for use over a photo. */
+  light?: boolean;
   /** Preview/testing only: force a visual state. */
   demo?: { phase: SpherePhase; elapsedMs?: number; level?: number; willCancel?: boolean };
 }
@@ -41,7 +43,7 @@ const spring = { damping: 14, stiffness: 260, mass: 0.7 };
  * ticks keep time. Slide away to cancel. Release to send → the sphere
  * "completes" with an extruded check and the dashes burst.
  */
-export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress, heard, loading, size = 240, demo, idleLabel, big }: TalkSphereProps) {
+export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress, heard, loading, size = 240, demo, idleLabel, big, light }: TalkSphereProps) {
   const toast = useToast();
   const disabled = !chairName;
   const [ui, setUi] = useState<SpherePhase>('idle');
@@ -239,27 +241,28 @@ export function TalkSphere({ chairName, onSend, onActiveChange, onDisabledPress,
       </View>
 
       <View style={[styles.status, big && styles.statusBig]}>
-        <StatusLine phase={phase} disabled={disabled} loading={loading} who={who} elapsed={elapsed} cancelArmed={cancelArmed} heard={heard} idleLabel={idleLabel} big={big} />
+        <StatusLine phase={phase} disabled={disabled} loading={loading} who={who} elapsed={elapsed} cancelArmed={cancelArmed} heard={heard} idleLabel={idleLabel} big={big} light={light} />
       </View>
     </View>
   );
 }
 
-function StatusLine({ phase, disabled, loading, who, elapsed, cancelArmed, heard, idleLabel = 'Hold to talk', big }: {
+function StatusLine({ phase, disabled, loading, who, elapsed, cancelArmed, heard, idleLabel = 'Hold to talk', big, light }: {
   phase: SpherePhase; disabled: boolean; loading?: boolean; who: string; elapsed: number; cancelArmed: boolean; heard?: boolean;
-  idleLabel?: string; big?: boolean;
+  idleLabel?: string; big?: boolean; light?: boolean;
 }) {
   if (loading) return null;
   // Bigger, higher-contrast copy for the chair.
-  const L = big ? styles.bigLabel : undefined;
-  const Small = big ? styles.bigLabel : styles.small;
+  const onPhoto = light ? styles.onPhoto : undefined;
+  const L = [big ? styles.bigLabel : undefined, onPhoto];
+  const Small = [big ? styles.bigLabel : styles.small, onPhoto];
   if (disabled) return <Txt variant="label" align="center">Link a chair</Txt>;
   switch (phase) {
     case 'holding': {
       const left = MAX_RECORDING_MS - elapsed;
       return (
         <>
-          <Txt variant="number" align="center" style={big ? styles.bigTimer : styles.timer}>{mmss(elapsed)}</Txt>
+          <Txt variant="number" align="center" style={[big ? styles.bigTimer : styles.timer, onPhoto]}>{mmss(elapsed)}</Txt>
           <Txt variant="label" tone={cancelArmed ? 'danger' : 'faint'} align="center" style={Small}>
             {cancelArmed ? 'Release to cancel' : left < 15_000 ? `${Math.ceil(left / 1000)}s left` : 'Slide away to cancel'}
           </Txt>
@@ -300,6 +303,7 @@ const styles = StyleSheet.create({
   timer: { fontSize: 24, lineHeight: 30, letterSpacing: 2 },
   small: { fontSize: 13, letterSpacing: 1.8 },
   statusBig: { height: 96 },
+  onPhoto: { color: '#FAF5EC', textShadowColor: 'rgba(0,0,0,0.55)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 } },
   bigLabel: { fontSize: 24, lineHeight: 32, letterSpacing: 3 },
   bigTimer: { fontSize: 40, lineHeight: 48, letterSpacing: 3 },
   heard: { alignItems: 'center', marginTop: space.sm },

@@ -124,9 +124,10 @@ export default function ChairHome() {
     <TalkSphere
       chairName="family"
       onSend={onReply}
-      size={sphereSize}
+      size={photoUri ? Math.min(Math.round(sphereSize * 0.36), 100) : sphereSize}
       idleLabel="Hold to reply"
       big
+      light={!!photoUri}
     />
   );
 
@@ -184,7 +185,8 @@ export default function ChairHome() {
         ) : (
           <>
             {header}
-            <View style={styles.center}>{sphere}</View>
+            {/* With a photo of the day, the sphere sits low and small so faces stay visible. */}
+            <View style={[styles.center, photoUri && styles.centerLow]}>{sphere}</View>
             {photoUri && photo!.text ? <Text style={[styles.caption, textShadow]} numberOfLines={2}>{photo!.text}</Text> : null}
             <View style={styles.replayWrap}>{replay}</View>
           </>
@@ -233,6 +235,7 @@ const styles = StyleSheet.create({
   photoFrom: { fontFamily: fonts.monoMedium, fontSize: 20, letterSpacing: 4, color: colors.text, textAlign: 'center', marginTop: space.sm },
   caption: { fontFamily: fonts.serif, fontSize: 30, lineHeight: 36, color: colors.text, textAlign: 'center', marginBottom: space.md },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  centerLow: { justifyContent: 'flex-end' },
   replayWrap: { alignSelf: 'stretch', alignItems: 'center' },
   replay: { flex: 1, minHeight: 84 },
 });

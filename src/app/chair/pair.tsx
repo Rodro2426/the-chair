@@ -103,7 +103,8 @@ export default function ChairPair() {
       </ChairBackground>
     );
   }
-  const codeSize = Math.min(landscape ? height * 0.16 : width * 0.12, 150);
+  // Six circles + gaps must fit inside the padded screen width.
+  const codeSize = Math.floor(Math.min(landscape ? height * 0.16 : (width - space.xl * 2 - 104) / 6, 150));
 
   return (
     <ChairBackground>
