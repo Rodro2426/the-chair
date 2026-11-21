@@ -2,18 +2,20 @@ import { Modal, StyleSheet, Text, View } from 'react-native';
 import { brand, colors, fonts, radius, space } from '@/theme/tokens';
 import { ChairButton } from './ChairButton';
 
-/** Family-only settings sheet, opened by a 3s long-press on the clock. */
+/** Chair settings: opened from the Settings button (or a 3s long-press on the clock). */
 export function HiddenSettings({
   visible,
   chairName,
   onShowPairing,
   onReset,
+  onLogout,
   onClose,
 }: {
   visible: boolean;
   chairName?: string;
   onShowPairing: () => void;
   onReset: () => void;
+  onLogout: () => void;
   onClose: () => void;
 }) {
   return (
@@ -23,6 +25,7 @@ export function HiddenSettings({
           <Text style={styles.title}>CHAIR SETTINGS</Text>
           {chairName ? <Text style={styles.sub}>{chairName}’s chair</Text> : null}
           <ChairButton label="Show pairing code" onPress={onShowPairing} style={styles.btn} />
+          <ChairButton label="Log out" icon="signout" variant="quiet" onPress={onLogout} style={styles.btn} />
           <ChairButton label="Reset this chair" variant="danger" onPress={onReset} style={styles.btn} />
           <ChairButton label="Close" variant="quiet" onPress={onClose} style={styles.btn} />
         </View>
@@ -32,7 +35,7 @@ export function HiddenSettings({
 }
 
 const styles = StyleSheet.create({
-  scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', padding: space.lg },
+  scrim: { flex: 1, backgroundColor: 'rgba(47,33,22,0.45)', alignItems: 'center', justifyContent: 'center', padding: space.lg },
   sheet: {
     width: '100%',
     maxWidth: 640,

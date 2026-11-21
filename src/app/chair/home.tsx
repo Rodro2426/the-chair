@@ -19,8 +19,10 @@ import { sendVoice, signOut, subscribeLatestPhoto, useMediaUrl } from '@/lib/api
 import { TalkSphere } from '@/components/family/TalkSphere';
 import { shortName } from '@/components/family/format';
 import { confirmAsync } from '@/hooks/confirm';
+import { setDeviceMode } from '@/hooks/deviceMode';
+import { Icon } from '@/components/ui';
 import type { RecordingResult } from '@/hooks/useVoiceRecorder';
-import { colors, fonts, space } from '@/theme/tokens';
+import { colors, fonts, radius, space } from '@/theme/tokens';
 import type { ChairMessage } from '@/types';
 
 /** Ambient receiver screen: photo of the day, clock, auto-playing messages, one Replay button. */
@@ -64,6 +66,19 @@ export default function ChairHome() {
       console.warn('[chair] reset failed', e);
     }
     router.replace('/chair/setup');
+  };
+
+  const logOut = async () => {
+    const ok = await confirmAsync(
+      'Log out of this chair?',
+      'This device stops receiving messages. To use it as the chair again, set it up and link it with a new code.',
+      'Log out', true,
+    );
+    if (!ok) return;
+    setSettingsOpen(false);
+    try { await signOut(); } catch (e) { console.warn('[chair] logout failed', e); }
+    await setDeviceMode(null); // open on the welcome screen next time, not straight into chair mode
+    router.replace('/welcome');
   };
 
   const onReply = useCallback(async (rec: RecordingResult) => {
@@ -115,15 +130,27 @@ export default function ChairHome() {
     />
   );
 
+  // Bottom row: Replay plus a Settings button (log out, pairing code, reset).
   const replay = (
-    <ChairButton
-      label="Replay"
-      icon="replay"
-      variant="quiet"
-      onPress={replayLast}
-      disabled={!lastPlayed || !!nowPlaying}
-      style={styles.replay}
-    />
+    <View style={styles.bottomRow}>
+      <ChairButton
+        label="Replay"
+        icon="replay"
+        variant="quiet"
+        onPress={replayLast}
+        disabled={!lastPlayed || !!nowPlaying}
+        style={styles.replay}
+      />
+      <Pressable
+        onPress={() => setSettingsOpen(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Chair settings"
+        style={({ pressed }) => [styles.gear, pressed && { opacity: 0.7 }]}
+      >
+        <Icon name="settings" size={26} color={colors.text} />
+        <Text style={styles.gearLabel}>SETTINGS</Text>
+      </Pressable>
+    </View>
   );
 
   return (
@@ -175,6 +202,7 @@ export default function ChairHome() {
           router.push({ pathname: '/chair/pair', params: { from: 'settings' } });
         }}
         onReset={resetDevice}
+        onLogout={logOut}
       />
     </ChairBackground>
   );
@@ -191,6 +219,9 @@ const textShadow = { color: '#FAF5EC', textShadowColor: 'rgba(0,0,0,0.6)', textS
 
 const styles = StyleSheet.create({
   layout: { flex: 1 },
+  bottomRow: { flexDirection: 'row', alignItems: 'stretch', gap: space.md, alignSelf: 'stretch', maxWidth: 560, width: '100%' },
+  gear: { width: 96, alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 2, borderColor: 'rgba(47,33,22,0.4)', borderRadius: radius.md },
+  gearLabel: { fontFamily: fonts.monoMedium, fontSize: 11, letterSpacing: 1.6, color: colors.textMuted },
   landscape: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   half: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.lg },
   header: { alignItems: 'center', alignSelf: 'stretch', gap: space.xs },
@@ -203,5 +234,5 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.serif, fontSize: 30, lineHeight: 36, color: colors.text, textAlign: 'center', marginBottom: space.md },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   replayWrap: { alignSelf: 'stretch', alignItems: 'center' },
-  replay: { alignSelf: 'stretch', minHeight: 84, maxWidth: 560, width: '100%' },
+  replay: { flex: 1, minHeight: 84 },
 });

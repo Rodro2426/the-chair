@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 import { ChairBackground, ChairButton } from '@/components/chair';
 import { registerChairDevice } from '@/lib/api';
+import { setDeviceMode } from '@/hooks/deviceMode';
 import { colors, fonts, space } from '@/theme/tokens';
 
 /** First run — done by the family member installing the chair. */
@@ -47,6 +48,11 @@ export default function ChairSetup() {
           />
           {error ? <Text style={styles.error}>{error}</Text> : null}
           <ChairButton label="Continue" onPress={submit} disabled={!trimmed} loading={busy} />
+          <ChairButton
+            label="Not the chair? Go back"
+            variant="quiet"
+            onPress={async () => { await setDeviceMode(null); router.replace('/welcome'); }}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </ChairBackground>
