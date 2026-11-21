@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.md, padding: space.lg },
   list: { paddingHorizontal: space.lg, paddingVertical: space.lg, width: '100%', maxWidth: 640, alignSelf: 'center' },
   day: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginVertical: space.md },
-  rule: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(255,255,255,0.16)' },
+  rule: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(47,33,22,0.16)' },
   bar: {
     flexDirection: 'row', justifyContent: 'space-around', paddingTop: space.sm,
-    borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.16)', backgroundColor: brand.black,
+    borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(47,33,22,0.16)', backgroundColor: brand.black,
   },
   action: { minWidth: 88, minHeight: 64, alignItems: 'center', justifyContent: 'center', gap: 6 },
 });

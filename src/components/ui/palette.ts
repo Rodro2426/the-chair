@@ -13,9 +13,9 @@ export const accentPalette: Record<Accent, {
   solid: string;
   outline: boolean;
 }> = {
-  voice: { face: ['#FFFFFF', '#E6E6E6'], depth: brand.black, label: colorsUi.onAccent, solid: brand.white, outline: false },
-  photo: { face: ['#FFFFFF', '#E6E6E6'], depth: brand.black, label: colorsUi.onAccent, solid: brand.white, outline: false },
-  text: { face: ['#FFFFFF', '#E6E6E6'], depth: brand.black, label: colorsUi.onAccent, solid: brand.white, outline: false },
+  voice: { face: [colors.primary, colors.primaryDeep], depth: colors.primaryDeep, label: colorsUi.onAccent, solid: colors.primary, outline: false },
+  photo: { face: [colors.primary, colors.primaryDeep], depth: colors.primaryDeep, label: colorsUi.onAccent, solid: colors.primary, outline: false },
+  text: { face: [colors.primary, colors.primaryDeep], depth: colors.primaryDeep, label: colorsUi.onAccent, solid: colors.primary, outline: false },
   neutral: { face: ['transparent', 'transparent'], depth: brand.black, label: colors.text, solid: 'transparent', outline: true },
   danger: { face: ['transparent', 'transparent'], depth: brand.black, label: colors.danger, solid: 'transparent', outline: true },
 };

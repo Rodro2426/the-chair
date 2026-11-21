@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   headline: { fontSize: 64, lineHeight: 66, letterSpacing: -0.5 },
   lede: { maxWidth: 320 },
   secondary: {
-    height: 56, borderRadius: radius.sm, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.4)',
+    height: 56, borderRadius: radius.sm, borderWidth: 1.5, borderColor: 'rgba(47,33,22,0.4)',
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm,
   },
   link: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: space.sm, paddingVertical: space.sm },

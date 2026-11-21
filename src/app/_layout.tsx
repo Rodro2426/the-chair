@@ -1,4 +1,4 @@
-import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -10,8 +10,8 @@ import { ToastProvider } from '@/components/ui';
 import { AuthProvider } from '@/hooks/useAuth';
 
 const theme = {
-  ...DarkTheme,
-  colors: { ...DarkTheme.colors, background: colors.bg, card: colors.bg, text: colors.text, primary: colors.primary, border: colors.cardBorder },
+  ...DefaultTheme,
+  colors: { ...DefaultTheme.colors, background: colors.bg, card: colors.bg, text: colors.text, primary: colors.primary, border: colors.cardBorder },
 };
 
 export default function RootLayout() {
@@ -25,7 +25,7 @@ export default function RootLayout() {
         <AuthProvider>
           <ToastProvider>
             <View style={{ flex: 1, backgroundColor: colors.bg }}>
-              <StatusBar style="light" />
+              <StatusBar style="dark" />
               <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }} />
             </View>
           </ToastProvider>

@@ -23,5 +23,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: space.md, justifyContent: 'center' },
   cell: { backgroundColor: brand.black, alignItems: 'center', justifyContent: 'center' },
   digit: { fontFamily: fonts.monoMedium, color: colors.text, fontVariant: ['tabular-nums'] },
-  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: 'rgba(255,255,255,0.25)' },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: 'rgba(47,33,22,0.25)' },
 });

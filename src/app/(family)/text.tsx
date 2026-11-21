@@ -88,10 +88,10 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: space.lg, gap: space.lg },
   input: {
     fontFamily: fonts.mono, fontSize: 22, lineHeight: 32, color: colors.text, minHeight: 160, textAlignVertical: 'top',
-    paddingVertical: space.sm, borderBottomWidth: 1.5, borderColor: 'rgba(255,255,255,0.18)', outlineStyle: 'none',
+    paddingVertical: space.sm, borderBottomWidth: 1.5, borderColor: 'rgba(47,33,22,0.18)', outlineStyle: 'none',
   } as object,
   counterRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.sm },
   ideas: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  chip: { paddingHorizontal: space.md, paddingVertical: space.sm, borderRadius: radius.sm, borderWidth: 1, borderColor: 'rgba(255,255,255,0.16)' },
+  chip: { paddingHorizontal: space.md, paddingVertical: space.sm, borderRadius: radius.sm, borderWidth: 1, borderColor: 'rgba(47,33,22,0.16)' },
   preview: { gap: 4 },
 });

@@ -23,7 +23,7 @@ const head = `
 `;
 // One solid colour behind everything — including the iPhone home-indicator strip and
 // overscroll areas, which otherwise show the page's default white.
-const BG = '#2B2019';
+const BG = '#EFE5DA';
 const solid = `<style id="the-chair-solid">html,body{background-color:${BG};}html{height:100%;}body{min-height:100%;min-height:100dvh;}#root{background-color:${BG};}`
   // App, not a web page: no text selection, no long-press callout/magnifier, no grey tap flash.
   // (Holding the talk sphere was selecting the whole block on iPhone.) Text fields stay editable.

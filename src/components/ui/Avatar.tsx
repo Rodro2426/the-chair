@@ -13,7 +13,7 @@ export function Avatar({ name, size = 44 }: { name: string; size?: number }) {
   return (
     <View style={{
       width: size, height: size, borderRadius: size / 2, backgroundColor: brand.black,
-      alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+      alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(47,33,22,0.12)',
     }}>
       <Txt variant="number" style={{ fontSize: size * 0.34, lineHeight: size * 0.44 }}>{initials(name)}</Txt>
     </View>

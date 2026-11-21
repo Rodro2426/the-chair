@@ -80,7 +80,7 @@ export function VolumeSlider({ value, onChange, onCommit }: {
 
 const styles = StyleSheet.create({
   wrap: { height: 56, justifyContent: 'center' },
-  track: { height: TRACK, backgroundColor: 'rgba(255,255,255,0.18)' },
+  track: { height: TRACK, backgroundColor: 'rgba(47,33,22,0.18)' },
   fill: { height: '100%', backgroundColor: colors.text },
   thumb: { position: 'absolute', width: THUMB, height: THUMB, borderRadius: THUMB / 2, backgroundColor: colors.text },
 });

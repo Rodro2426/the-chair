@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     color: colors.text,
     borderBottomWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: 'rgba(47,33,22,0.3)',
     paddingVertical: space.md,
     marginVertical: space.lg,
     outlineStyle: 'none',

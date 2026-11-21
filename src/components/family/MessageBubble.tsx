@@ -45,7 +45,7 @@ function VoiceBubble({ msg, mine, player }: { msg: ChairMessage; mine: boolean; 
           <Icon name={playing ? 'pause' : 'play'} size={20} color={brand.black} style={!playing && { marginLeft: 3 }} />
         </PressableScale>
         <View style={{ flex: 1, gap: 6 }}>
-          <StaticWaveform seed={msg.id} progress={progress} color={colors.text} dim="rgba(255,255,255,0.22)" />
+          <StaticWaveform seed={msg.id} progress={progress} color={colors.text} dim="rgba(47,33,22,0.22)" />
           <Txt variant="number" tone="muted" style={{ fontSize: 14 }}>
             {active && player.currentTime > 0 ? `${mmss(player.currentTime * 1000)} / ` : ''}
             {mmss(totalMs)}
@@ -92,7 +92,7 @@ function TextBubble({ msg, mine }: { msg: ChairMessage; mine: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  bubble: { maxWidth: '88%', borderRadius: radius.sm, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  bubble: { maxWidth: '88%', borderRadius: radius.sm, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(47,33,22,0.1)' },
   mine: { alignSelf: 'flex-end', backgroundColor: colors.bgElevated },
   theirs: { alignSelf: 'flex-start', backgroundColor: brand.black },
   voice: { width: 300, padding: space.md, gap: space.md },

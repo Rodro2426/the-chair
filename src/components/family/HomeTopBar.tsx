@@ -25,7 +25,7 @@ export function HomeTopBar({ title, online, onPlus, onTitle, onSettings }: {
         <View style={styles.titleRow}>
           <Txt variant="label" numberOfLines={1} style={{ fontSize: 15, letterSpacing: 2.4 }}>{title}</Txt>
           {online !== null && online !== undefined ? (
-            <View style={[styles.dot, { backgroundColor: online ? colors.primary : 'rgba(255,255,255,0.3)' }]} />
+            <View style={[styles.dot, { backgroundColor: online ? colors.primary : 'rgba(47,33,22,0.3)' }]} />
           ) : null}
         </View>
         {online !== null && online !== undefined ? (

@@ -40,9 +40,9 @@ export function ListRow({ label, hint, value, right, onPress, danger, chevron = 
 
 const styles = StyleSheet.create({
   section: { marginBottom: space.sm },
-  group: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.16)' },
+  group: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(47,33,22,0.16)' },
   row: {
     flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 68, paddingVertical: space.md,
-    borderBottomWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.16)',
+    borderBottomWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(47,33,22,0.16)',
   },
 });

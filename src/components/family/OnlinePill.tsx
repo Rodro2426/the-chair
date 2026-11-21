@@ -11,7 +11,7 @@ export function OnlinePill({ chair }: { chair: Chair }) {
   const online = isChairOnline(chair, now);
   return (
     <View style={styles.row}>
-      <View style={[styles.dot, { backgroundColor: online ? colors.primary : 'rgba(255,255,255,0.3)' }]} />
+      <View style={[styles.dot, { backgroundColor: online ? colors.primary : 'rgba(47,33,22,0.3)' }]} />
       <Txt variant="caption" tone={online ? 'default' : 'faint'} upper>{lastSeenLabel(chair, now)}</Txt>
     </View>
   );

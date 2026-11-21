@@ -1,4 +1,4 @@
-// The Chair design tokens — solid espresso brown, one glossy sphere, mono type.
+// The Chair design tokens — warm cream and caramel brown, one glossy sphere, mono type.
 // See docs/BRAND.md. Key names are stable (screens import them); values are the brand.
 
 /** Font family names, loaded in src/app/_layout.tsx with useFonts. */
@@ -12,33 +12,33 @@ export const fonts = {
 };
 
 export const colors = {
-  bg: '#2B2019', // espresso brown — the whole app is this one solid colour
-  bgElevated: '#362920',
-  card: '#33271F',
-  cardBorder: 'rgba(255,240,225,0.10)',
-  text: '#F2EFEA', // warm off-white
-  textMuted: 'rgba(242,239,234,0.72)',
-  textFaint: 'rgba(242,239,234,0.46)',
-  // Accent: one warm yellow, used sparingly (TODAY underline, progress, HEARD).
-  primary: '#FFB52E',
-  primaryDeep: '#C98612',
-  // Rare celebration pops only.
-  secondary: '#2F5BFF', // electric blue
-  secondaryDeep: '#1B3BC4',
-  tertiary: '#FF6F61', // coral
-  tertiaryDeep: '#C9473B',
-  danger: '#FF6F61',
-  success: '#F2EFEA', // success is white — monochrome first
+  bg: '#EFE5DA', // warm cream — the whole app is this one solid colour
+  bgElevated: '#FAF5EC', // card cream
+  card: '#FAF5EC',
+  cardBorder: '#E2D5C0',
+  text: '#2F2116', // deep brown ink
+  textMuted: 'rgba(47,33,22,0.72)',
+  textFaint: 'rgba(47,33,22,0.48)',
+  // Accent: caramel brown (the chair), used for primary buttons, underlines, progress.
+  primary: '#804905',
+  primaryDeep: '#5E3503',
+  secondary: '#454764', // slate blue (from the illustration)
+  secondaryDeep: '#2F3048',
+  tertiary: '#C57F6B', // terracotta
+  tertiaryDeep: '#9E5A47',
+  danger: '#B4432F',
+  success: '#804905',
 };
 
 /** Brand-only extras. */
 export const brand = {
-  black: '#150F0B', // wells, day circles, code circles (warm near-black)
-  well: '#18110D',
+  black: '#FAF5EC', // "surface": day circles, code cells, toasts, icons on dark fills (name kept for call sites)
+  well: '#83540B', // caramel well around the sphere — the chair
   white: '#FFFFFF',
-  grey: '#A39282',
-  greyDark: '#4C3D32',
-  divider: 'rgba(255,240,225,0.09)',
+  grey: '#8E7F6E',
+  greyDark: '#D9CCBA', // tracks, off switches
+  divider: 'rgba(47,33,22,0.12)',
+  lavender: '#B6B4BC',
   grainOpacity: 0, // solid colour: no texture
 };
 
@@ -47,7 +47,7 @@ export const gradients = {
   voice: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
   photo: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
   text: ['#FFFFFF', '#D9D9D9', '#A9A9A9'] as const,
-  background: ['#2B2019', '#2B2019'] as const,
+  background: ['#EFE5DA', '#EFE5DA'] as const,
 };
 
 // Sharp edges: rectangles, not pills. Real circles (sphere, day dots, code dots, play) use size/2.
@@ -73,19 +73,19 @@ export const shadow = {
 };
 
 export const gradientsUi = {
-  neutral: ['#3A2C22', '#32261E', '#2A1F18'] as const,
-  danger: ['#FF8A7E', '#FF6F61', '#C9473B'] as const,
+  neutral: ['#FAF5EC', '#F3EADF', '#EFE5DA'] as const,
+  danger: ['#C9604B', '#B4432F', '#8E2E1F'] as const,
   gloss: ['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)'] as const,
   glossSoft: ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0)'] as const,
 };
 
 export const colorsUi = {
-  depthNeutral: '#150F0B',
-  dangerDeep: '#8E2E25',
-  highlightEdge: 'rgba(255,255,255,0.18)',
-  scrim: 'rgba(0,0,0,0.66)',
-  inputBg: 'rgba(255,255,255,0.03)',
-  inputBorder: 'rgba(255,255,255,0.14)',
-  onAccent: '#150F0B', // text on white / yellow
+  depthNeutral: '#E2D5C0',
+  dangerDeep: '#8E2E1F',
+  highlightEdge: 'rgba(47,33,22,0.18)',
+  scrim: 'rgba(47,33,22,0.45)',
+  inputBg: 'rgba(47,33,22,0.03)',
+  inputBorder: 'rgba(47,33,22,0.18)',
+  onAccent: '#FAF5EC', // text on caramel / dark-brown fills
   onAccentLight: '#FFFFFF',
 };

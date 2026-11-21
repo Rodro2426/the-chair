@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.thechair.app",
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#2B2019",
+        "backgroundColor": "#EFE5DA",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -33,11 +33,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "backgroundColor": "#2B2019",
+      "backgroundColor": "#EFE5DA",
       "output": "single",
       "name": "The Chair",
       "shortName": "The Chair",
-      "themeColor": "#2B2019"
+      "themeColor": "#EFE5DA"
     },
     "scheme": "thechair",
     "plugins": [
@@ -49,7 +49,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#2B2019"
+          "backgroundColor": "#EFE5DA"
         }
       ],
       [
@@ -71,6 +71,6 @@
       "typedRoutes": true,
       "baseUrl": "/the-chair"
     },
-    "backgroundColor": "#2B2019"
+    "backgroundColor": "#EFE5DA"
   }
 }

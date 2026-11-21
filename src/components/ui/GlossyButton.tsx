@@ -43,7 +43,7 @@ export function GlossyButton({
         styles.base,
         { height: HEIGHT[size] },
         p.outline
-          ? { borderWidth: 1.5, borderColor: accent === 'danger' ? colors.danger : 'rgba(255,255,255,0.5)' }
+          ? { borderWidth: 1.5, borderColor: accent === 'danger' ? colors.danger : 'rgba(47,33,22,0.35)' }
           : { backgroundColor: p.solid },
         disabled && { opacity: 0.35 },
         style,

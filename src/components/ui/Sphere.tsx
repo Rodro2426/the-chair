@@ -40,10 +40,10 @@ export function Sphere({ size, ring = Math.round(size * 0.07), dim, progress = 0
         <Defs>
           {/* Body: mid-grey core that brightens toward the rim. */}
           <RadialGradient id={`body${id}`} cx="44%" cy="56%" r="58%" fx="40%" fy="60%">
-            <Stop offset="0" stopColor="#A2A2A2" />
-            <Stop offset="0.5" stopColor="#B6B6B6" />
-            <Stop offset="0.82" stopColor="#DADADA" />
-            <Stop offset="1" stopColor="#F2F2F2" />
+            <Stop offset="0" stopColor="#C9B89F" />
+            <Stop offset="0.5" stopColor="#D9CBB5" />
+            <Stop offset="0.82" stopColor="#ECE2D2" />
+            <Stop offset="1" stopColor="#FAF5EC" />
           </RadialGradient>
           {/* Key light from the top-right. */}
           <RadialGradient id={`key${id}`} cx="80%" cy="28%" r="52%" fx="86%" fy="22%">
@@ -53,14 +53,14 @@ export function Sphere({ size, ring = Math.round(size * 0.07), dim, progress = 0
           </RadialGradient>
           {/* Soft occlusion low-left so it reads as a ball, not a disc. */}
           <RadialGradient id={`occ${id}`} cx="30%" cy="78%" r="50%">
-            <Stop offset="0" stopColor="#6E6E6E" stopOpacity="0.35" />
-            <Stop offset="1" stopColor="#6E6E6E" stopOpacity="0" />
+            <Stop offset="0" stopColor="#7A5A3A" stopOpacity="0.35" />
+            <Stop offset="1" stopColor="#7A5A3A" stopOpacity="0" />
           </RadialGradient>
           {/* Well: almost black, a whisper of lift on the lower-right lip. */}
           <SvgLinearGradient id={`well${id}`} x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor="#070707" />
+            <Stop offset="0" stopColor="#4A2C05" />
             <Stop offset="0.7" stopColor={brand.well} />
-            <Stop offset="1" stopColor="#1A1A1A" />
+            <Stop offset="1" stopColor="#6A4208" />
           </SvgLinearGradient>
         </Defs>
 

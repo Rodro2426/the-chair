@@ -127,10 +127,10 @@ const styles = StyleSheet.create({
   content: { flexGrow: 1, maxWidth: 640, width: '100%', alignSelf: 'center' },
   body: { paddingHorizontal: space.lg, gap: space.lg },
   headline: { fontSize: 54, lineHeight: 58, marginTop: space.md },
-  list: { marginTop: space.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.14)' },
+  list: { marginTop: space.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(47,33,22,0.14)' },
   option: {
     flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.lg,
-    borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.14)',
+    borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(47,33,22,0.14)',
   },
   optionLabel: { flex: 1, fontSize: 16, letterSpacing: 2.4 },
   banner: { paddingVertical: space.md, paddingHorizontal: space.md, borderRadius: radius.sm, gap: 4, borderWidth: 1, borderColor: brand.divider },

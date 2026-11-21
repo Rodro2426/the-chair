@@ -84,10 +84,10 @@ const styles = StyleSheet.create({
     width: '100%', aspectRatio: 1, borderRadius: 999, alignItems: 'center', justifyContent: 'center',
     backgroundColor: brand.black, borderWidth: 1.5, borderColor: 'transparent',
   },
-  filled: { borderColor: 'rgba(255,255,255,0.12)' },
-  active: { borderColor: 'rgba(255,255,255,0.55)' },
+  filled: { borderColor: 'rgba(47,33,22,0.12)' },
+  active: { borderColor: 'rgba(47,33,22,0.55)' },
   error: { borderColor: colors.danger },
-  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)' },
+  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: 'rgba(47,33,22,0.25)' },
   underline: { width: 18, height: 2, borderRadius: 1, backgroundColor: colors.primary, marginTop: 8, opacity: 0 },
   hidden: { position: 'absolute', opacity: 0, width: 1, height: 1 },
 });

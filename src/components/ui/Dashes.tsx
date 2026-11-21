@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
-import { colors } from '@/theme/tokens';
+import { brand, colors } from '@/theme/tokens';
 
 export interface Dash {
   angle: number; // radians, 0 = right
@@ -33,7 +33,7 @@ export function makeDashes(r: number, count = 18, seed = 7, accent?: string, kee
       len,
       thick: square ? r * 0.06 : Math.max(3.5, r * (0.035 + rnd() * 0.02)),
       rot: (rnd() - 0.5) * (square ? 1.6 : 0.6),
-      color: square ? '#8C8C8C' : accent && i === 3 ? accent : '#FFFFFF',
+      color: square ? brand.lavender : accent && i === 3 ? accent : colors.primary,
       opacity: square ? 0.7 : 0.85 + rnd() * 0.15,
       gain: 0.4 + rnd() * 0.9,
     });

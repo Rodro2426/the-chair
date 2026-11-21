@@ -187,7 +187,7 @@ function splitTime(d: Date): [string, string] {
   return m ? [m[1], m[2].toUpperCase()] : [t, ''];
 }
 
-const textShadow = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 12, textShadowOffset: { width: 0, height: 2 } } as const;
+const textShadow = { color: '#FAF5EC', textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 12, textShadowOffset: { width: 0, height: 2 } } as const;
 
 const styles = StyleSheet.create({
   layout: { flex: 1 },

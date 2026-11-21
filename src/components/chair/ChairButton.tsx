@@ -48,7 +48,7 @@ export function ChairButton({
 const styles = StyleSheet.create({
   base: { minHeight: 110, paddingHorizontal: space.xxl, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
   primary: { backgroundColor: colors.text },
-  quiet: { borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)' },
+  quiet: { borderWidth: 2, borderColor: 'rgba(47,33,22,0.4)' },
   danger: { borderWidth: 2, borderColor: colors.danger },
   pressed: { transform: [{ scale: 0.98 }], opacity: 0.9 },
   disabled: { opacity: 0.3 },

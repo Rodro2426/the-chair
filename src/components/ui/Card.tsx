@@ -19,7 +19,7 @@ export function Card({ padded = true, style, children, ...rest }: CardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'rgba(255,255,255,0.025)',
+    backgroundColor: 'rgba(47,33,22,0.025)',
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.cardBorder,

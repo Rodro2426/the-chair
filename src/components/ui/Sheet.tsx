@@ -48,10 +48,10 @@ const styles = StyleSheet.create({
     paddingTop: space.sm, paddingHorizontal: space.lg, width: '100%', maxWidth: 640, alignSelf: 'center',
     borderWidth: 1, borderBottomWidth: 0, borderColor: brand.divider,
   },
-  grab: { alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.18)', marginBottom: space.md },
+  grab: { alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(47,33,22,0.18)', marginBottom: space.md },
   option: {
     flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.lg,
-    borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.12)',
+    borderTopWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(47,33,22,0.12)',
   },
   activeDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
 });
