@@ -15,7 +15,7 @@ import { greetingFor, useClock } from '@/hooks/chair/useClock';
 import { useHeartbeat } from '@/hooks/chair/useHeartbeat';
 import { ensureChairAudioMode } from '@/hooks/chair/playback';
 import { usePlaybackQueue } from '@/hooks/chair/usePlaybackQueue';
-import { sendVoice, signOut, subscribeLatestPhoto, useMediaUrl } from '@/lib/api';
+import { sendVoice, signOut, startOfLocalDay, subscribeLatestPhoto, useMediaUrl } from '@/lib/api';
 import { TalkSphere } from '@/components/family/TalkSphere';
 import { shortName } from '@/components/family/format';
 import { confirmAsync } from '@/hooks/confirm';
@@ -25,13 +25,15 @@ import type { RecordingResult } from '@/hooks/useVoiceRecorder';
 import { colors, fonts, radius, space } from '@/theme/tokens';
 import type { ChairMessage } from '@/types';
 
-/** Ambient receiver screen: photo of the day, clock, auto-playing messages, one Replay button. */
+/** Ambient receiver screen: today's photo (gone at midnight), clock, auto-playing messages, Replay. */
 export default function ChairHome() {
   const { chair, loading } = useChairDevice();
   const chairId = chair?.id ?? null;
-  const [photo, setPhoto] = useState<ChairMessage | null>(null);
+  const [latestPhoto, setLatestPhoto] = useState<ChairMessage | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const now = useClock();
+  // The photo of the day only shows on the day it was sent; at midnight it goes to the family's archive.
+  const photo = latestPhoto && latestPhoto.createdAt >= startOfLocalDay(now) ? latestPhoto : null;
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
@@ -50,7 +52,7 @@ export default function ChairHome() {
   useEffect(() => {
     if (!chairId) return;
     try {
-      return subscribeLatestPhoto(chairId, setPhoto);
+      return subscribeLatestPhoto(chairId, setLatestPhoto);
     } catch (e) {
       console.warn('[chair] subscribeLatestPhoto failed', e);
     }

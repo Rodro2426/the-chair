@@ -46,7 +46,7 @@ fs.writeFileSync(indexPath, html);
 const routes = [
   'welcome', 'sign-in', 'sign-up',
   'home', 'history', 'link', 'photo', 'settings', 'text', 'chairs',
-  'talk', 'stories', 'ask', 'box', 'family',
+  'talk', 'stories', 'ask', 'box', 'family', 'photos',
   'chair', 'chair/home', 'chair/pair', 'chair/setup',
 ];
 for (const r of routes) {

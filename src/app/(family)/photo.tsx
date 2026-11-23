@@ -64,7 +64,11 @@ export default function PhotoOfTheDay() {
     <ScreenBackground>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + space.lg }]}>
-          <ScreenHeader close title="Photo of the day" subtitle={selected ? `For ${selected.name}` : undefined} />
+          <ScreenHeader close title="Photo of the day" subtitle={selected ? `For ${selected.name}` : undefined} right={
+            <PressableScale onPress={() => router.push('/photos')} hapticStyle="select" accessibilityRole="link" accessibilityLabel="Photo archive" style={{ padding: space.sm }}>
+              <Txt variant="label" style={{ fontSize: 12, letterSpacing: 1.4 }}>Archive</Txt>
+            </PressableScale>
+          } />
           <View style={styles.body}>
             {sentToday && (
               <Animated.View entering={FadeIn} style={styles.banner}>

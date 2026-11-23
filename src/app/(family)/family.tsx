@@ -56,7 +56,8 @@ export default function Family() {
 
       <ListSection title="More">
         <ListRow label="Message history" hint="Everything sent to the chair" onPress={() => router.push('/history')} />
-        <ListRow label="Photo of the day" hint="Shown big on the chair" onPress={() => router.push('/photo')} />
+        <ListRow label="Photo of the day" hint="Shown big on the chair until midnight" onPress={() => router.push('/photo')} />
+        <ListRow label="Photo archive" hint="Every past photo of the day" onPress={() => router.push('/photos')} />
         <ListRow label="Settings" hint="Your name, linked chairs, volume" onPress={() => router.push('/settings')} />
       </ListSection>
     </TabScreen>

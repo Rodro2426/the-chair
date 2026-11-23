@@ -176,6 +176,16 @@ function latestPhotoQuery(chairId: string) {
   return query(messagesCol(chairId), where('type', '==', 'photo'), orderBy('createdAt', 'desc'), qLimit(1));
 }
 
+/** Every photo of the day sent to this chair, newest first (the family's photo archive). */
+export function subscribePhotos(chairId: string, cb: (msgs: ChairMessage[]) => void, limit = 120): Unsubscribe {
+  const q = query(messagesCol(chairId), where('type', '==', 'photo'), orderBy('createdAt', 'desc'), qLimit(limit));
+  return onSnapshot(
+    q,
+    (snap) => cb(snap.docs.map(toMessage)),
+    (err) => { console.warn('[messages] subscribePhotos error', err); cb([]); },
+  );
+}
+
 /** The most recent photo (or null). */
 export function subscribeLatestPhoto(chairId: string, cb: (msg: ChairMessage | null) => void): Unsubscribe {
   return onSnapshot(

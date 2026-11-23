@@ -23,6 +23,7 @@ export {
   markReplyHeard,
   subscribeUnplayed,
   subscribeLatestPhoto,
+  subscribePhotos,
   sendVoice,
   sendText,
   sendPhoto,
