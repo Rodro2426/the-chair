@@ -7,3 +7,7 @@ The photos inside these mockups come from Unsplash and are used under the Unspla
 
 The phone frames are drawn from scratch (not Apple artwork); the screens are real captures of
 The Chair web app (https://rodro2426.github.io/the-chair/) with a demo account.
+
+## Story Box
+
+- Postcard photo (family at sunset, sepia-toned): https://images.unsplash.com/photo-1511895426328-dc8714191300 (Unsplash License)
