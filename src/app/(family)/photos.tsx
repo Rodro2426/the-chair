@@ -3,9 +3,12 @@ import { Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } f
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { brand, colors, radius, space } from '@/theme/tokens';
-import { Icon, PressableScale, ScreenBackground, ScreenHeader, Txt } from '@/components/ui';
+import { Icon, PressableScale, ScreenBackground, ScreenHeader, Txt, useToast } from '@/components/ui';
 import { useChairs } from '@/hooks/useChairs';
-import { startOfLocalDay, subscribePhotos, useMediaUrl } from '@/lib/api';
+import { deleteMessage, startOfLocalDay, subscribePhotos, useMediaUrl } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
+import { confirmAsync } from '@/hooks/confirm';
+import { friendlyError } from '@/hooks/errors';
 import type { ChairMessage } from '@/types';
 
 const dayLabel = (ms: number) => new Date(ms).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
@@ -66,7 +69,7 @@ export default function Photos() {
       </ScrollView>
 
       <Modal visible={!!open} transparent animationType="fade" onRequestClose={() => setOpen(null)}>
-        {open ? <Viewer msg={open} onClose={() => setOpen(null)} /> : null}
+        {open && selected ? <Viewer msg={open} chairId={selected.id} onClose={() => setOpen(null)} /> : null}
       </Modal>
     </ScreenBackground>
   );
@@ -86,9 +89,32 @@ function Tile({ msg, size, onPress, onChair }: { msg: ChairMessage; size: number
   );
 }
 
-function Viewer({ msg, onClose }: { msg: ChairMessage; onClose: () => void }) {
+function Viewer({ msg, chairId, onClose }: { msg: ChairMessage; chairId: string; onClose: () => void }) {
   const uri = useMediaUrl(msg);
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+  const mine = msg.senderUid === user?.uid;
+  const isToday = msg.createdAt >= startOfLocalDay();
+
+  const remove = async () => {
+    const ok = await confirmAsync(
+      'Delete this photo?',
+      isToday ? 'It disappears from the chair and from the archive.' : 'It is removed from the archive for everyone.',
+      'Delete', true,
+    );
+    if (!ok) return;
+    setBusy(true);
+    try {
+      await deleteMessage(chairId, msg);
+      toast.show('Photo deleted.');
+      onClose();
+    } catch (e) {
+      toast.show(friendlyError(e, 'Couldn’t delete the photo. Please try again.'), 'error');
+      setBusy(false);
+    }
+  };
   return (
     <View style={styles.viewer}>
       <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="Close"
@@ -103,6 +129,13 @@ function Viewer({ msg, onClose }: { msg: ChairMessage; onClose: () => void }) {
         <Txt variant="label" style={[styles.small, { color: 'rgba(250,245,236,0.7)' }]}>
           {dayLabel(msg.createdAt)} · FROM {msg.senderName.toUpperCase()}
         </Txt>
+        {mine ? (
+          <PressableScale onPress={remove} disabled={busy} hapticStyle="select" style={styles.delete}
+            accessibilityRole="button" accessibilityLabel="Delete photo">
+            <Icon name="trash" size={20} color="#FAF5EC" />
+            <Txt variant="label" style={[styles.small, { color: '#FAF5EC' }]}>{busy ? 'Deleting' : 'Delete photo'}</Txt>
+          </PressableScale>
+        ) : null}
       </View>
     </View>
   );
@@ -119,4 +152,8 @@ const styles = StyleSheet.create({
   close: { position: 'absolute', right: space.lg, zIndex: 2, padding: space.sm },
   full: { flex: 1, margin: space.lg, marginTop: 72 },
   caption: { paddingHorizontal: space.lg, gap: space.sm },
+  delete: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm, marginTop: space.md, minHeight: 52,
+    borderWidth: 1, borderColor: 'rgba(250,245,236,0.35)', borderRadius: radius.sm,
+  },
 });
