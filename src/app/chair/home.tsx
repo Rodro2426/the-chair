@@ -223,7 +223,7 @@ const textShadow = { color: '#FAF5EC', textShadowColor: 'rgba(0,0,0,0.6)', textS
 
 const styles = StyleSheet.create({
   layout: { flex: 1 },
-  bottomRow: { flexDirection: 'row', alignItems: 'stretch', gap: space.md, alignSelf: 'stretch', maxWidth: 560, width: '100%' },
+  bottomRow: { flexDirection: 'row', alignItems: 'stretch', gap: space.md, maxWidth: 560, width: '100%', alignSelf: 'center' },
   gear: { width: 96, alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 2, borderColor: 'rgba(47,33,22,0.4)', borderRadius: radius.md },
   gearLabel: { fontFamily: fonts.monoMedium, fontSize: 11, letterSpacing: 1.6, color: colors.textMuted },
   landscape: { flex: 1, flexDirection: 'row', alignItems: 'center' },
